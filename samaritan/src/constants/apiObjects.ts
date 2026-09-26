@@ -47,6 +47,7 @@ export interface CreateEmergency {
 */
 export interface UpdateEmergency {
     User_ID: String
+    Emergency_ID: Number
     Latitude?: Number
     Longitude?: Number
     Requires_911?: boolean

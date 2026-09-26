@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Dropdown from "../app/components/Dropdown";
-import { CreateEmergency } from '../constants/apiObjects';
-import { createEmergency } from '../utils/api';
+import { CreateEmergency, UpdateEmergency } from '../constants/apiObjects';
+import { createEmergency, updateEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 import SubmitButton from './components/SubmitButton';
 
@@ -51,6 +51,26 @@ export default function EmergencyScreen() {
       console.log('[submitEmergency] Step 3: Calling POST /emergency...');
       const response = await createEmergency(payload);
       console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.Emergency_ID);
+
+      if (emergencyType !== '' || text !== '') {
+        const updatePayload: UpdateEmergency = {
+          User_ID: '1', // TODO: replace with the real signed-in user's ID once auth exists
+          Emergency_ID: response.Emergency_ID,
+          Emergency_Nature: emergencyType || undefined,
+          Description: text || undefined,
+          ECDSA_r: 0,
+          ECDSA_s: 0,
+        };
+        try {
+          console.log('[submitEmergency] Step 5: Calling POST /emergency/update...');
+          await updateEmergency(updatePayload);
+          console.log('[submitEmergency] Step 6: Emergency details updated successfully');
+        } catch (updateError) {
+          // Non-fatal: the emergency was already created, so proceed even if the details update fails
+          console.log('[submitEmergency] Update failed ->', updateError);
+        }
+      }
+
       router.replace({ pathname: '/emergency-status', params: { emergencyId: String(response.Emergency_ID) } });
     } catch (error) {
       console.log('[submitEmergency] Request failed ->', error);
