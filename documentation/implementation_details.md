@@ -1,7 +1,13 @@
 # Samaritain Implementation Documentation
-This document outlines and explains the implementation of the samaritain app in different tech stacks
+This document outlines and explains the implementation of the samaritain app in different tech stacks<br>
+Table of Contents:<br>
+[UI/UX](#uiux)<br>
+[Front-End](#front-end)<br>
+[Back-End](#back-end)<br>
+[Post-MVP](#postmvp)<br>
 
-## UI/UX
+
+## <a id="uiux"></a>UI/UX
 ### Basic Elements
 #### Homescreen
 - Top of homescreen says: ``"Text or Dial 911 for any emergencies. The Distress button is NOT a replacement for requesting emergency services"``
@@ -24,7 +30,7 @@ This document outlines and explains the implementation of the samaritain app in 
 - Appears for samaritain responders as well, plus a map to where the emergency is
 #### Profile Page
 - Allows to opt in or out of being a samaritain 
-## Front-End 
+## <a id="front-end"></a>Front-End 
 Behind-the-scenes logic of the UI.
 - No logins, ever. On first boot, generates a ECDSA key pair and sends it to POST /user. The back-end replies with the created User-ID.
 - Emergency calls can be sent and canceled via API (Check JSON Structures file).
@@ -33,7 +39,7 @@ Behind-the-scenes logic of the UI.
 - Opting in should send API request to change user details
 - Follow JSON format found on JSON structures documentation
 
-## Back-End
+## <a id="back-end"></a>Back-End
 - Has API Endpoints for all actions the user can take.
 - Only sends out notifications/Only allows emergencies form
 - Verifies actions that require identity using ECDSA public key from that user id (View JSON documentation for)
@@ -42,7 +48,7 @@ Behind-the-scenes logic of the UI.
 ## Database
 Stores Users Table with columns id and ecdsa public key.
 
-## Post MVP
+## <a id="postmvp"></a>Post MVP
 - A radius option for how far away the distress call should call for people below the button as a slider.
 - Navbar now features a profile where the user can input their own details, which is informed to be provided in the distress call if they choose YES for "is this emergency for you?", only shown when a emergency is accepted.
 - Loading indication" of time going down for emergency button (Vertical/Horizontal color change across the button?)
