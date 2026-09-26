@@ -1,6 +1,8 @@
+import { generateECDSAKeyPair } from '@/utils/ecdsa';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from "react-native";
 import Button from '../components/EmergencyButton';
+
 
 export default function Index() {
   const router = useRouter();
@@ -11,7 +13,15 @@ export default function Index() {
 
       <Button 
         label="Request Emergency Help"
-        onPress={() => router.push('/emergency')}
+        onPress={() => {
+          const keys = generateECDSAKeyPair()
+          if(keys == undefined) {
+            console.log("Error generating key!")
+          }
+          else {
+            console.log("Public key: " + keys[1])
+          }
+        }}
         />
 
       <Text style={[styles.text, { fontWeight: 'bold' }]}> Nearby Samaritans: 12 </Text>
