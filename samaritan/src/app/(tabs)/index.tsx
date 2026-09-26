@@ -15,6 +15,9 @@ export default function Index() {
         />
       </View>
       <Text style={[styles.text, { fontWeight: 'bold' }]}> Nearby Samaritans: 12 </Text>
+      <Text style={styles.hintText}>
+        Want to help others nearby? You can opt in to be a Samaritan from the Profile tab.
+      </Text>
       <Text style={styles.disclaimerText}> For life-threatening emergencies, call 911 immediately. Samaritan connects you with nearby registered responders and does not replace emergency services. </Text>
     </View>
   );
@@ -33,6 +36,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     fontSize: 20,
     textAlign: 'center',
+  },
+  hintText: {
+    color: '#FF383C',
+    fontSize: 13,
+    textAlign: 'center',
+    paddingHorizontal: 40,
+    marginTop: 8,
+    fontWeight: 'bold',
   },
   disclaimerText: {
     color: '#FF383C',
