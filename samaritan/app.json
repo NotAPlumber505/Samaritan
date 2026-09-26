@@ -23,7 +23,7 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.anonymous.samaritan",
-      "googleServicesFile": "./android/app/google-services.json"
+      "googleServicesFile": "samaritan/google-services.json"
     },
     "web": {
       "output": "static",
