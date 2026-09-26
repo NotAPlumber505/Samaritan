@@ -56,7 +56,6 @@ export default function EmergencyScreen() {
     } catch (error) {
       console.log('[submitEmergency] Request failed ->', error);
       Alert.alert('Submission failed', 'Could not submit your emergency. Please check your connection and try again.');
-    } finally {
       setIsSubmitting(false);
     }
   };
