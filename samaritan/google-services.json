@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80347212524",
+    "project_id": "samaritan-bd1ef",
+    "storage_bucket": "samaritan-bd1ef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80347212524:android:af30e9c69023ac3142d3c9",
+        "android_client_info": {
+          "package_name": "com.hacks.samaritan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5UrD_a7KAt4RByKDIbpUsk2hEbzqaxh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
