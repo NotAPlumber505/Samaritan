@@ -31,10 +31,10 @@ export interface CreateUserResponse {
  * Served by Front-end to Back-end 
 */
 export interface CreateEmergency {
-    User_ID: Number
-    Latitude: Number
-    Longitude: Number
-    Ecdsa_signature: String
+    user_ID: Number
+    latitude: Number
+    longitude: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -45,15 +45,15 @@ export interface CreateEmergency {
  * Served by Front-end to Back-end 
 */
 export interface UpdateEmergency {
-    User_ID: String
-    Emergency_ID: Number
-    Latitude?: Number
-    Longitude?: Number
-    Requires_911?: boolean
-    Emergency_Nature?: String
-    Self_Emergency?: String
-    Description?: String
-    Ecdsa_signature: String
+    user_ID: String
+    emergency_ID: Number
+    latitude?: Number
+    longitude?: Number
+    requires_911?: boolean
+    emergency_Nature?: String
+    self_Emergency?: String
+    description?: String
+    ecdsa_signature: String
 }
 
 /**
@@ -64,7 +64,7 @@ export interface UpdateEmergency {
  * Served by Back-end to Front-end 
  */
 export interface EmergencyBackendResponse {
-    Emergency_ID: Number
+    emergency_ID: Number
 }
 
 /**
@@ -75,8 +75,8 @@ export interface EmergencyBackendResponse {
  * Served by Front-End to Back-end 
  */
 export interface RequestEmergencies {
-    Latitude: Number
-    Longitude: Number
+    latitude: Number
+    longitude: Number
 }
 
 /**
@@ -87,7 +87,7 @@ export interface RequestEmergencies {
  * Served by Back-end to Front-end after requesting reasonably distanced Emergencies to a specific user
  */
 export interface Emergencies {
-    Emergencies : EmergencyDetails[]
+    emergencies : EmergencyDetails[]
 }
 
 /**
@@ -98,14 +98,14 @@ export interface Emergencies {
  * Served by Back-end to Front-end after requesting a specific emergency
  */
 export interface EmergencyDetails {
-    Emergency_ID: Number
-    Latitude?: Number
-    Longitude?: Number
-    Requires_911?: boolean
-    Emergency_Type?: String
-    Self_Emergency?: String
-    Description?: String
-    Requested_At?: String //ISO-8601 timestamp of when the emergency was created
+    emergency_ID: Number
+    latitude?: Number
+    longitude?: Number
+    requires_911?: boolean
+    emergency_Type?: String
+    self_Emergency?: String
+    description?: String
+    requested_At?: String //ISO-8601 timestamp of when the emergency was created
 }
 
 /**
@@ -116,9 +116,9 @@ export interface EmergencyDetails {
  * Accepts an emergency
  */
 export interface AcceptEmergency {
-    User_ID: String
-    Emergency_ID: Number
-    Ecdsa_signature: String
+    user_ID: String
+    emergency_ID: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -129,9 +129,9 @@ export interface AcceptEmergency {
  * Deletes a Emergency, must be requested from the original user
  */
 export interface DeleteEmergency {
-    User_ID: Number
-    Emergency_ID: Number
-    Ecdsa_signature: String
+    user_ID: Number
+    emergency_ID: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -142,8 +142,8 @@ export interface DeleteEmergency {
  * Served by Front-end to Back-end
  */
 export interface ReportLocation {
-    Latitude: Number
-    Longitude: Number
+    latitude: Number
+    longitude: Number
 }
 
 /**
@@ -154,8 +154,8 @@ export interface ReportLocation {
  * Served by Back-end to Front-end
  */
 export interface DistanceToResponder {
-    Distance_Km: Number
-    Distance_Miles: Number
-    Responder_Latitude: Number
-    Responder_Longitude: Number
+    distance_Km: Number
+    distance_Miles: Number
+    responder_Latitude: Number
+    responder_Longitude: Number
 }
