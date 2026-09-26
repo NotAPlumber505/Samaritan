@@ -107,6 +107,7 @@ export interface EmergencyDetails {
     Emergency_Type?: String
     Self_Emergency?: String
     Description?: String
+    Requested_At?: String //ISO-8601 timestamp of when the emergency was created
 }
 
 /**

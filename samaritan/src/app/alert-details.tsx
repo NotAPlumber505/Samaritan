@@ -1,10 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { emergencies } from '../app/data/emergencies';
+import { EmergencyDetails } from '../constants/apiObjects';
 
 export default function AlertDetailsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const emergency = emergencies.find((item) => item.id === id);
+  const { emergency: emergencyParam } = useLocalSearchParams<{ emergency: string }>();
+  const emergency: EmergencyDetails | null = emergencyParam ? JSON.parse(emergencyParam) : null;
 
   const showResponse = (response: 'accepted' | 'declined') => {
     Alert.alert(
@@ -29,10 +29,14 @@ export default function AlertDetailsScreen() {
       <Text style={styles.title}>Emergency Details</Text>
 
       <View style={styles.details}>
-        <Detail label="Emergency type" value={emergency.type} />
-        <Detail label="Location" value={emergency.location} />
-        <Detail label="Time requested" value={emergency.requestedAt} />
-        <Detail label="Description" value={emergency.description} />
+        <Detail label="Emergency type" value={String(emergency.Emergency_Type ?? 'Unknown')} />
+        <Detail label="Location" value={`${emergency.Latitude ?? '?'}, ${emergency.Longitude ?? '?'}`} />
+        <Detail label="Requires 911" value={emergency.Requires_911 ? 'Yes' : 'No'} />
+        <Detail
+          label="Time requested"
+          value={emergency.Requested_At ? new Date(String(emergency.Requested_At)).toLocaleString() : 'Unknown'}
+        />
+        <Detail label="Description" value={String(emergency.Description ?? 'No description provided')} />
       </View>
 
       <View style={styles.actions}>
