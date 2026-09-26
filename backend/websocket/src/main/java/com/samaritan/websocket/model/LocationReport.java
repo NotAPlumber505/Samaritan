@@ -2,13 +2,17 @@ package com.samaritan.websocket.model;
 
 import org.antlr.v4.runtime.misc.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LocationReport {
 
     @NotNull
+    @JsonProperty("Latitude")
     private Double latitude;
 
 
     @NotNull
+    @JsonProperty("Longitude")
     private Double longitude;
 
 
@@ -26,6 +30,7 @@ public class LocationReport {
     private String emergencyType;
     private String selfEmergency;
     private String description;
+    @JsonProperty("Label")
     private String label;
 
     public LocationReport(){
