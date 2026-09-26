@@ -44,8 +44,7 @@ export default function EmergencyScreen() {
       User_ID: 1,
       Latitude: location.coords.latitude,
       Longitude: location.coords.longitude,
-      ECDSA_r: 0,
-      ECDSA_s: 0,
+      Ecdsa_signature: ""
     };
 
     try {
@@ -72,8 +71,7 @@ export default function EmergencyScreen() {
           Emergency_ID: response.Emergency_ID,
           Emergency_Nature: emergencyType || undefined,
           Description: text || undefined,
-          ECDSA_r: 0,
-          ECDSA_s: 0,
+          Ecdsa_signature: ""
         };
         try {
           console.log('[submitEmergency] Step 6: Calling POST /emergency/update...');

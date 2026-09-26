@@ -34,8 +34,7 @@ export interface CreateEmergency {
     User_ID: Number
     Latitude: Number
     Longitude: Number
-    ECDSA_r: Number //ECDSA verification first integer part
-    ECDSA_s: Number //ECDSA verification second integer part
+    Ecdsa_signature: String
 }
 
 /**
@@ -54,8 +53,7 @@ export interface UpdateEmergency {
     Emergency_Nature?: String
     Self_Emergency?: String
     Description?: String
-    ECDSA_r: Number
-    ECDSA_s: Number
+    Ecdsa_signature: String
 }
 
 /**
@@ -120,8 +118,7 @@ export interface EmergencyDetails {
 export interface AcceptEmergency {
     User_ID: String
     Emergency_ID: Number
-    ECDSA_r: Number
-    ECDSA_s: Number
+    Ecdsa_signature: String
 }
 
 /**
@@ -134,8 +131,7 @@ export interface AcceptEmergency {
 export interface DeleteEmergency {
     User_ID: Number
     Emergency_ID: Number
-    ECDSA_r: Number
-    ECDSA_s: Number
+    Ecdsa_signature: String
 }
 
 /**
