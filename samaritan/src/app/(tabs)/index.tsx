@@ -1,4 +1,4 @@
-import { generateECDSAKeyPair } from '@/utils/ecdsa';
+import { generateECDSAKeyPair, signData } from '@/utils/ecdsa';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from "react-native";
 import Button from '../components/EmergencyButton';
@@ -17,10 +17,31 @@ export default function Index() {
           const keys = generateECDSAKeyPair()
           if(keys == undefined) {
             console.log("Error generating key!")
+            return
+          }
+          if(!(keys[0] && keys[1])){ 
+            console.log("One of the keys are undefined!")
+            return
           }
           else {
             console.log("Public key: " + keys[1])
           }
+          console.log("Signing data: DOG")
+          const data = "DOG"
+          const dataSigned = signData(keys[0].toString(),data)
+          fetch("http://10.108.174.111:8080/verify", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              'Content-Type': "application/json",
+            },
+            body: JSON.stringify({
+              publicKey: keys[1],
+              signedData: dataSigned,
+              rawData: data
+            })
+          })
+
         }}
         />
 
