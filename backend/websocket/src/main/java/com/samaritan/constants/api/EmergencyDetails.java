@@ -8,7 +8,8 @@ public record EmergencyDetails(
         Double longitude,
         Boolean requires_911,
         String emergency_type,
-        Boolean self_emergency,
-        String description
+        String self_emergency,
+        String description,
+        String requested_at
 ) {
 }

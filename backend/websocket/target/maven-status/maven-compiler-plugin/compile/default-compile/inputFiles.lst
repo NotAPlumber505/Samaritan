@@ -11,8 +11,8 @@ C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\utils\Ecdsa.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\utils\repositories\EmergencyTable.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\config\WebsocketConfig.java
+C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\controller\EmergencyController.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\controller\EmergencySocketController.java
-C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\controller\HttpEndpointsController.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\controller\LocationController.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\controller\TestPublishController.java
 C:\Users\MCasa\ReactNativeProjects\Samaritan\backend\websocket\src\main\java\com\samaritan\websocket\exception\EmergencyNotFoundException.java

@@ -2,6 +2,8 @@ package com.samaritan.websocket.repository;
 
 
 import com.samaritan.websocket.model.Emergency;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +25,16 @@ public class EmergencyRepository {
 
     public Optional<Emergency> findById(long id) {
         return Optional.ofNullable(emergencies.get(id));
+    }
+
+    public List<Emergency> findAll() {
+        return emergencies.values().stream()
+                .sorted(Comparator.comparingLong(Emergency::getId))
+                .toList();
+    }
+
+    public boolean deleteById(long id) {
+        return emergencies.remove(id) != null;
     }
 
 
