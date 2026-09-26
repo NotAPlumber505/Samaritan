@@ -1,4 +1,14 @@
-import { CreateEmergency, DeleteEmergency, EmergencyBackendResponse } from '../constants/apiObjects';
+import {
+    AcceptEmergency,
+    CreateEmergency,
+    CreateUser,
+    CreateUserResponse,
+    DeleteEmergency,
+    Emergencies,
+    EmergencyBackendResponse,
+    RequestEmergencies,
+    UpdateEmergency,
+} from '../constants/apiObjects';
 
 // Set EXPO_PUBLIC_API_BASE_URL in .env. When testing on a physical device/simulator,
 // "localhost" points at the device itself, so use your computer's LAN IP instead
@@ -6,50 +16,83 @@ import { CreateEmergency, DeleteEmergency, EmergencyBackendResponse } from '../c
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
 /**
- * Sends a POST /emergency request to the backend to create a new emergency.
+ * Shared fetch helper: sends the request, logs each step, and throws on a non-OK response.
+ * Every API wrapper below is a thin, typed call to this so the debug logging stays consistent.
  */
-export async function createEmergency(payload: CreateEmergency): Promise<EmergencyBackendResponse> {
-  console.log('[createEmergency] Step A: Request payload ->', payload);
+async function apiRequest<T>(label: string, method: string, path: string, body?: unknown): Promise<T> {
+  console.log(`[${label}] Step A: Request -> ${method} ${path}`, body ?? '(no body)');
 
-  const response = await fetch(`${API_BASE_URL}/emergency`, {
-    method: 'POST',
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  console.log('[createEmergency] Step B: Response status ->', response.status);
+  console.log(`[${label}] Step B: Response status ->`, response.status);
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.log('[createEmergency] Step C: Error response body ->', errorText);
+    console.log(`[${label}] Step C: Error response body ->`, errorText);
     throw new Error(`Request failed with status ${response.status}`);
   }
 
-  const data: EmergencyBackendResponse = await response.json();
-  console.log('[createEmergency] Step C: Success response body ->', data);
+  if (response.status === 204) {
+    console.log(`[${label}] Step C: Success (no content)`);
+    return undefined as T;
+  }
 
+  const data = (await response.json()) as T;
+  console.log(`[${label}] Step C: Success response body ->`, data);
   return data;
+}
+
+/**
+ * Sends a POST /user request to the backend to create a new user.
+ */
+export function createUser(payload: CreateUser): Promise<CreateUserResponse> {
+  return apiRequest<CreateUserResponse>('createUser', 'POST', '/user', payload);
+}
+
+/**
+ * Sends a POST /emergency request to the backend to create a new emergency.
+ */
+export function createEmergency(payload: CreateEmergency): Promise<EmergencyBackendResponse> {
+  return apiRequest<EmergencyBackendResponse>('createEmergency', 'POST', '/emergency', payload);
+}
+
+/**
+ * Sends a POST /emergency/update request to the backend to update an existing emergency.
+ */
+export function updateEmergency(payload: UpdateEmergency): Promise<EmergencyBackendResponse> {
+  return apiRequest<EmergencyBackendResponse>('updateEmergency', 'POST', '/emergency/update', payload);
+}
+
+/**
+ * Sends a GET /emergency request to the backend for emergencies near the given coordinates.
+ */
+export function getEmergencies(payload: RequestEmergencies): Promise<Emergencies> {
+  const query = new URLSearchParams({
+    Latitude: String(payload.Latitude),
+    Longitude: String(payload.Longitude),
+  });
+  return apiRequest<Emergencies>('getEmergencies', 'GET', `/emergency?${query.toString()}`);
+}
+
+/**
+ * Sends a POST /emergency/{id}/accept request to the backend to accept an emergency.
+ */
+export function acceptEmergency(payload: AcceptEmergency): Promise<EmergencyBackendResponse> {
+  return apiRequest<EmergencyBackendResponse>(
+    'acceptEmergency',
+    'POST',
+    `/emergency/${payload.Emergency_ID}/accept`,
+    payload,
+  );
 }
 
 /**
  * Sends a DELETE /emergency/{id} request to the backend to delete an emergency.
  */
-export async function deleteEmergency(emergencyId: number, payload: DeleteEmergency): Promise<void> {
-  console.log('[deleteEmergency] Step A: Request payload ->', payload);
-
-  const response = await fetch(`${API_BASE_URL}/emergency/${emergencyId}`, {
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  console.log('[deleteEmergency] Step B: Response status ->', response.status);
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.log('[deleteEmergency] Step C: Error response body ->', errorText);
-    throw new Error(`Request failed with status ${response.status}`);
-  }
-
-  console.log('[deleteEmergency] Step C: Emergency deleted successfully');
+export function deleteEmergency(emergencyId: number, payload: DeleteEmergency): Promise<void> {
+  return apiRequest<void>('deleteEmergency', 'DELETE', `/emergency/${emergencyId}`, payload);
 }

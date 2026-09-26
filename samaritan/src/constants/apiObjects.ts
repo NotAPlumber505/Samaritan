@@ -5,8 +5,9 @@
  * 
  * Served by Front-end to Back-end
  */
-interface CreateUser {
+export interface CreateUser {
     ECDSA_public_key: String
+    Push_Token?: String //Expo push notification token, used to notify this user of nearby emergencies
 }
 
 /**
@@ -16,7 +17,7 @@ interface CreateUser {
  * 
  * Served by Back-end to Front-End
  */
-interface CreateUserResponse {
+export interface CreateUserResponse {
     User_ID: Number
 }
 
@@ -42,7 +43,7 @@ export interface CreateEmergency {
  * 
  * Served by Front-end to Back-end 
 */
-interface UpdateEmergency {
+export interface UpdateEmergency {
     User_ID: String
     Latitude?: Number
     Longitude?: Number
@@ -72,7 +73,7 @@ export interface EmergencyBackendResponse {
  * 
  * Served by Front-End to Back-end 
  */
-interface RequestEmergencies {
+export interface RequestEmergencies {
     Latitude: Number
     Longitude: Number
 }
@@ -84,7 +85,7 @@ interface RequestEmergencies {
  * 
  * Served by Back-end to Front-end after requesting reasonably distanced Emergencies to a specific user
  */
-interface Emergencies {
+export interface Emergencies {
     Emergencies : EmergencyDetails[]
 }
 
@@ -95,7 +96,7 @@ interface Emergencies {
  * 
  * Served by Back-end to Front-end after requesting a specific emergency
  */
-interface EmergencyDetails {
+export interface EmergencyDetails {
     Emergency_ID: Number
     Latitude?: Number
     Longitude?: Number
@@ -112,7 +113,7 @@ interface EmergencyDetails {
  * 
  * Accepts an emergency
  */
-interface Accept_Emergency {
+export interface AcceptEmergency {
     User_ID: String
     Emergency_ID: Number
     ECDSA_r: Number
