@@ -9,6 +9,7 @@ public record EmergencyDetails(
         @JsonProperty("Requires_911") Boolean requires911,
         @JsonProperty("Emergency_Type") String emergencyType,
         @JsonProperty("Self_Emergency") String selfEmergency,
-        @JsonProperty("Description") String description
+        @JsonProperty("Description") String description,
+        @JsonProperty("Requested_At") String requestedAt
 ) {
 }

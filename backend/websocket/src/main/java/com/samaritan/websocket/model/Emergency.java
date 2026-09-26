@@ -1,9 +1,12 @@
 package com.samaritan.websocket.model;
 
+import java.time.Instant;
+
 public class Emergency {
 
     private final long id;
     private final long ownerUserId;
+    private final Instant requestedAt;
     private Double latitude;
     private Double longitude;
     private Boolean requires911;
@@ -17,6 +20,7 @@ public class Emergency {
         this.ownerUserId = ownerUserId;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.requestedAt = Instant.now();
     }
 
     public void applyUpdate(UpdateEmergencyMessage u){
@@ -30,7 +34,7 @@ public class Emergency {
 
     public EmergencyDetails toDetails() {
         return new EmergencyDetails(id, latitude, longitude, requires911, emergencyType,
-                selfEmergency, description);
+                selfEmergency, description, requestedAt.toString());
     }
 
     public long getId() {
