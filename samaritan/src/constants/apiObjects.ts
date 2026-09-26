@@ -29,8 +29,8 @@ interface CreateUserResponse {
 */
 interface CreateEmergency {
     User_ID: Number
-    Latitude: String
-    Longitude: String
+    Latitude: Number
+    Longitude: Number
     ECDSA_r: Number //ECDSA verification first integer part
     ECDSA_s: Number //ECDSA verification second integer part
 }
@@ -97,8 +97,8 @@ interface Emergencies {
  */
 interface EmergencyDetails {
     Emergency_ID: Number
-    Latitude?: String
-    Longitude?: String
+    Latitude?: Number
+    Longitude?: Number
     Requires_911?: boolean
     Emergency_Type?: String
     Self_Emergency?: String
