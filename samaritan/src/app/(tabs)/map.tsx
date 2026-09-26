@@ -1,12 +1,11 @@
-import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from 'react-native';
+import GoogleMapsButton from '../components/GoogleMapsButton';
 
 export default function MapScreen() {
-  const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Maps screen.</Text>
+      <GoogleMapsButton />
     </View>
   );
 }
@@ -16,13 +15,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   text: {
     color: '#327EFF',
-    paddingVertical: 40,
-    paddingHorizontal: 40,
-    fontSize: 20,
-    textAlign: 'center',
+    marginBottom: 20,
   },
 });
