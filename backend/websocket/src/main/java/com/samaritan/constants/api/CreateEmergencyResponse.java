@@ -1,6 +1,6 @@
 package com.samaritan.constants.api;
 
-public record EmergencyResponse(
+public record CreateEmergencyResponse(
         int emergency_id
 ) {
 }
