@@ -1,12 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Dropdown from "../app/components/Dropdown";
+import CancelButton from './components/CancelButton';
+import SubmitButton from './components/SubmitButton';
 
 export default function EmergencyScreen() {
   const [emergencyType, setEmergencyType] = useState("");
   const [text, setText] = useState('');
+
+  const cancelEmergency = () => {
+    router.replace('/');
+  };
+
+  const submitEmergency = () => {
+    Alert.alert('Emergency submitted', 'Your emergency request has been submitted.');
+  };
 
   return (
     <View style={styles.container}>
@@ -37,6 +47,10 @@ export default function EmergencyScreen() {
         numberOfLines={6}
       />
 
+      <View style={styles.actions}>
+        {emergencyType !== '' && <SubmitButton onPress={submitEmergency} />}
+        <CancelButton onConfirm={cancelEmergency} />
+      </View>
     </View>
   );
 }
@@ -88,5 +102,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
     textAlignVertical: 'top',
+  },
+  actions: {
+    alignSelf: 'stretch',
+    gap: 12,
+    marginTop: 'auto',
+    paddingHorizontal: 20,
+    paddingBottom: 32,
   },
 });
