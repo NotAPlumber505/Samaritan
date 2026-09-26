@@ -1,4 +1,4 @@
-import crypto, { KeyPairKey } from 'react-native-quick-crypto'
+import crypto from 'react-native-quick-crypto';
 
 export function generateECDSAKeyPair() {
     try
