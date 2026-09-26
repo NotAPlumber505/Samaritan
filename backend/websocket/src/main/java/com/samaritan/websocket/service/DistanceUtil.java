@@ -25,7 +25,7 @@ public final class DistanceUtil {
 
     }
 
-    private static double distanceMiles(double lat1, double lon1, double lat2, double lon2){
+    public static double distanceMiles(double lat1, double lon1, double lat2, double lon2){
         return distanceKm(lat1, lon1, lat2, lon2) * 0.621371;
     }
 
