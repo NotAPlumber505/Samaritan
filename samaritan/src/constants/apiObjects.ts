@@ -120,28 +120,13 @@ interface Accept_Emergency {
 }
 
 /**
- * JSON Format of requesting a emergency to be marked as resolve
- * 
- * For POST /emergency/{id}/resolve
- * 
- * Resolves a Emergency, must be requested from the original user
- */
-interface Delete_Emergency {
-    User_ID: Number
-    Emergency_ID: Number
-    ECDSA_r: Number
-    ECDSA_s: Number
-}
-
-
-/**
  * JSON Format of requesting a emergency to be deleted
  * 
  * For DELETE /emergency/{id}/
  * 
  * Deletes a Emergency, must be requested from the original user
  */
-interface Delete_Emergency {
+export interface DeleteEmergency {
     User_ID: Number
     Emergency_ID: Number
     ECDSA_r: Number

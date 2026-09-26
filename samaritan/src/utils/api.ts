@@ -1,4 +1,4 @@
-import { CreateEmergency, EmergencyBackendResponse } from '../constants/apiObjects';
+import { CreateEmergency, DeleteEmergency, EmergencyBackendResponse } from '../constants/apiObjects';
 
 // Set EXPO_PUBLIC_API_BASE_URL in .env. When testing on a physical device/simulator,
 // "localhost" points at the device itself, so use your computer's LAN IP instead
@@ -29,4 +29,27 @@ export async function createEmergency(payload: CreateEmergency): Promise<Emergen
   console.log('[createEmergency] Step C: Success response body ->', data);
 
   return data;
+}
+
+/**
+ * Sends a DELETE /emergency/{id} request to the backend to delete an emergency.
+ */
+export async function deleteEmergency(emergencyId: number, payload: DeleteEmergency): Promise<void> {
+  console.log('[deleteEmergency] Step A: Request payload ->', payload);
+
+  const response = await fetch(`${API_BASE_URL}/emergency/${emergencyId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  console.log('[deleteEmergency] Step B: Response status ->', response.status);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.log('[deleteEmergency] Step C: Error response body ->', errorText);
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  console.log('[deleteEmergency] Step C: Emergency deleted successfully');
 }

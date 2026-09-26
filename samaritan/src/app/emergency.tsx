@@ -51,8 +51,7 @@ export default function EmergencyScreen() {
       console.log('[submitEmergency] Step 3: Calling POST /emergency...');
       const response = await createEmergency(payload);
       console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.Emergency_ID);
-      Alert.alert('Emergency submitted', `Your emergency request has been submitted (ID: ${response.Emergency_ID}).`);
-      router.replace('/');
+      router.replace({ pathname: '/emergency-status', params: { emergencyId: String(response.Emergency_ID) } });
     } catch (error) {
       console.log('[submitEmergency] Request failed ->', error);
       Alert.alert('Submission failed', 'Could not submit your emergency. Please check your connection and try again.');

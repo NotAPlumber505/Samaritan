@@ -1,13 +1,30 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import { DeleteEmergency } from '../constants/apiObjects';
+import { deleteEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 
 export default function EmergencyStatusScreen() {
   const { emergencyId } = useLocalSearchParams<{ emergencyId: string }>();
 
-  const cancelEmergency = () => {
-    // TODO: call DELETE /emergency/{id} once cancellation is wired to the backend
-    router.replace('/');
+  const cancelEmergency = async () => {
+    // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
+    const payload: DeleteEmergency = {
+      User_ID: 1,
+      Emergency_ID: Number(emergencyId),
+      ECDSA_r: 0,
+      ECDSA_s: 0,
+    };
+
+    try {
+      console.log('[cancelEmergency] Calling DELETE /emergency/', emergencyId);
+      await deleteEmergency(Number(emergencyId), payload);
+      console.log('[cancelEmergency] Emergency deleted successfully');
+    } catch (error) {
+      console.log('[cancelEmergency] Request failed ->', error);
+    } finally {
+      router.replace('/');
+    }
   };
 
   return (
