@@ -27,7 +27,7 @@ interface CreateUserResponse {
  * 
  * Served by Front-end to Back-end 
 */
-interface CreateEmergency {
+export interface CreateEmergency {
     User_ID: Number
     Latitude: Number
     Longitude: Number
@@ -61,7 +61,7 @@ interface UpdateEmergency {
  * 
  * Served by Back-end to Front-end 
  */
-interface EmergencyBackendResponse {
+export interface EmergencyBackendResponse {
     Emergency_ID: Number
 }
 

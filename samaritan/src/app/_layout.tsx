@@ -10,6 +10,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="emergency" options={{ headerShown: false }} />
+        <Stack.Screen name="emergency-status" options={{ headerShown: false }} />
         <Stack.Screen name="alert-details" options={{ title: 'Alert details' }} />
       </Stack>
       <StatusBar style="dark" />

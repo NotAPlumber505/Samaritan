@@ -1,21 +1,64 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Dropdown from "../app/components/Dropdown";
+import { CreateEmergency } from '../constants/apiObjects';
+import { createEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 import SubmitButton from './components/SubmitButton';
 
 export default function EmergencyScreen() {
   const [emergencyType, setEmergencyType] = useState("");
   const [text, setText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cancelEmergency = () => {
     router.replace('/');
   };
 
-  const submitEmergency = () => {
-    Alert.alert('Emergency submitted', 'Your emergency request has been submitted.');
+  const submitEmergency = async () => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+
+    console.log('[submitEmergency] Step 1: Requesting location permission...');
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Location Permission Required', 'Please allow location access to submit an emergency.');
+      return;
+    }
+
+    const location = await Location.getLastKnownPositionAsync({});
+    if (!location) {
+      Alert.alert('Location unavailable', 'Unable to find your last known location. Please try again.');
+      return;
+    }
+    console.log('[submitEmergency] Step 2: Location found ->', location.coords);
+
+    // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
+    const payload: CreateEmergency = {
+      User_ID: 1,
+      Latitude: location.coords.latitude,
+      Longitude: location.coords.longitude,
+      ECDSA_r: 0,
+      ECDSA_s: 0,
+    };
+
+    try {
+      console.log('[submitEmergency] Step 3: Calling POST /emergency...');
+      const response = await createEmergency(payload);
+      console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.Emergency_ID);
+      Alert.alert('Emergency submitted', `Your emergency request has been submitted (ID: ${response.Emergency_ID}).`);
+      router.replace('/');
+    } catch (error) {
+      console.log('[submitEmergency] Request failed ->', error);
+      Alert.alert('Submission failed', 'Could not submit your emergency. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -48,7 +91,7 @@ export default function EmergencyScreen() {
       />
 
       <View style={styles.actions}>
-        {emergencyType !== '' && <SubmitButton onPress={submitEmergency} />}
+        {emergencyType !== '' && <SubmitButton onPress={submitEmergency} disabled={isSubmitting} />}
         <CancelButton onConfirm={cancelEmergency} />
       </View>
     </View>
