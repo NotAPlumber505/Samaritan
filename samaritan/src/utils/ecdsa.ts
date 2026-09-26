@@ -27,7 +27,7 @@ export function signData(ecdsaPrivateKey: string, data: string) {
     {
         const sign = crypto.createSign("SHA256");
         sign.update(data)
-        return sign.sign(ecdsaPrivateKey, 'hex')
+        return sign.sign(ecdsaPrivateKey, 'base64')
     }
     catch (error) {
         console.log("Exception while creating keypair! Here's the exception:\n" + error)
