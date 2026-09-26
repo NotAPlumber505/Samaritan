@@ -6,6 +6,24 @@ import Button from '../components/EmergencyButton';
 
 export default function Index() {
   const router = useRouter();
+  const backendIp = "127.0.0.1"
+  const fetchPostRest = async (publicKey:string ,dataSigned:string, data: string ) => {
+    console.log("Sending fetch POST")
+    const response = await fetch(`http://${backendIp}/verify`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              'Content-Type': "application/json",
+            },
+            body: JSON.stringify({
+              publicKey: publicKey,
+              signedData: dataSigned,
+              rawData: data
+            })
+          })
+    console.log("Response has arrived! : " + response)
+  }
+
 
   return (
     <View style={styles.container}>
@@ -29,18 +47,12 @@ export default function Index() {
           console.log("Signing data: DOG")
           const data = "DOG"
           const dataSigned = signData(keys[0].toString(),data)
-          fetch("http://10.108.174.111:8080/verify", {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              'Content-Type': "application/json",
-            },
-            body: JSON.stringify({
-              publicKey: keys[1],
-              signedData: dataSigned,
-              rawData: data
-            })
-          })
+
+          if(!dataSigned) {
+            console.log("failed to sign data")
+            return
+          }
+          fetchPostRest(keys[1].toString(), dataSigned.toString(), data)
 
         }}
         />

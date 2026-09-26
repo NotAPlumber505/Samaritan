@@ -17,7 +17,8 @@ public class TestEDCSAKeyController {
     public static void keyVerify(@RequestBody ECDSATest body) {
         System.out.println("Received Key! Body (JSON):\n " + body);
         System.out.println("Attempting to verify...");
-        boolean result = Ecdsa.verifyECDSA(body.rawData().getBytes(StandardCharsets.UTF_8), body.signedData().getBytes(StandardCharsets.UTF_8), body.publicKey());
+        System.out.println("Public Key: " + body.publicKey());
+        boolean result = Ecdsa.verifyECDSA(body.rawData(), body.signedData(), body.publicKey());
         if (result) {
             System.out.println("Succesful verification!");
         }
