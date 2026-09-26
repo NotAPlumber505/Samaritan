@@ -4,8 +4,10 @@ import {
     CreateUser,
     CreateUserResponse,
     DeleteEmergency,
+    DistanceToResponder,
     Emergencies,
     EmergencyBackendResponse,
+    ReportLocation,
     RequestEmergencies,
     UpdateEmergency,
 } from '../constants/apiObjects';
@@ -95,4 +97,22 @@ export function acceptEmergency(payload: AcceptEmergency): Promise<EmergencyBack
  */
 export function deleteEmergency(emergencyId: number, payload: DeleteEmergency): Promise<void> {
   return apiRequest<void>('deleteEmergency', 'DELETE', `/emergency/${emergencyId}`, payload);
+}
+
+/**
+ * Sends a POST /location/{emergencyId}/{label} request to report where the requester or responder currently is.
+ */
+export function reportLocation(
+  emergencyId: number,
+  label: 'requester' | 'responder',
+  payload: ReportLocation,
+): Promise<void> {
+  return apiRequest<void>('reportLocation', 'POST', `/location/${emergencyId}/${label}`, payload);
+}
+
+/**
+ * Sends a GET /location/{emergencyId}/distance request for how far the responder is from the requester.
+ */
+export function getDistanceToResponder(emergencyId: number): Promise<DistanceToResponder> {
+  return apiRequest<DistanceToResponder>('getDistanceToResponder', 'GET', `/location/${emergencyId}/distance`);
 }

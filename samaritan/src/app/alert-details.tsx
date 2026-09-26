@@ -1,16 +1,58 @@
+import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmergencyDetails } from '../constants/apiObjects';
+import { setActiveEmergencyId } from '../utils/activeEmergency';
+import { acceptEmergency, reportLocation } from '../utils/api';
 
 export default function AlertDetailsScreen() {
   const { emergency: emergencyParam } = useLocalSearchParams<{ emergency: string }>();
   const emergency: EmergencyDetails | null = emergencyParam ? JSON.parse(emergencyParam) : null;
 
-  const showResponse = (response: 'accepted' | 'declined') => {
-    Alert.alert(
-      `Emergency ${response}`,
-      `This emergency has been ${response} for testing purposes.`,
-    );
+  const acceptThisEmergency = async () => {
+    if (!emergency) return;
+    const emergencyId = Number(emergency.Emergency_ID);
+
+    try {
+      console.log('[acceptThisEmergency] Step 1: Calling POST /emergency/{id}/accept...');
+      await acceptEmergency({
+        User_ID: '1', // TODO: replace with the real signed-in user's ID once auth exists
+        Emergency_ID: emergencyId,
+        ECDSA_r: 0,
+        ECDSA_s: 0,
+      });
+      console.log('[acceptThisEmergency] Step 2: Emergency accepted');
+
+      await setActiveEmergencyId(emergencyId);
+
+      console.log('[acceptThisEmergency] Step 3: Requesting location permission...');
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        const location = await Location.getLastKnownPositionAsync({});
+        if (location) {
+          try {
+            console.log('[acceptThisEmergency] Step 4: Reporting responder location...');
+            await reportLocation(emergencyId, 'responder', {
+              Latitude: location.coords.latitude,
+              Longitude: location.coords.longitude,
+            });
+          } catch (reportError) {
+            // Non-fatal: the emergency was already accepted, so proceed even if the location report fails
+            console.log('[acceptThisEmergency] Location report failed ->', reportError);
+          }
+        }
+      }
+
+      Alert.alert('Emergency accepted', 'You have accepted this emergency for testing purposes.');
+      router.back();
+    } catch (error) {
+      console.log('[acceptThisEmergency] Request failed ->', error);
+      Alert.alert('Could not accept', 'Please check your connection and try again.');
+    }
+  };
+
+  const declineEmergency = () => {
+    router.back();
   };
 
   if (!emergency) {
@@ -40,10 +82,10 @@ export default function AlertDetailsScreen() {
       </View>
 
       <View style={styles.actions}>
-        <Pressable onPress={() => showResponse('accepted')} style={styles.acceptButton}>
+        <Pressable onPress={acceptThisEmergency} style={styles.acceptButton}>
           <Text style={styles.buttonText}>Accept</Text>
         </Pressable>
-        <Pressable onPress={() => showResponse('declined')} style={styles.declineButton}>
+        <Pressable onPress={declineEmergency} style={styles.declineButton}>
           <Text style={styles.buttonText}>Decline</Text>
         </Pressable>
       </View>

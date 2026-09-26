@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { DeleteEmergency } from '../constants/apiObjects';
+import { clearActiveEmergencyId } from '../utils/activeEmergency';
 import { deleteEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 
@@ -23,6 +24,7 @@ export default function EmergencyStatusScreen() {
     } catch (error) {
       console.log('[cancelEmergency] Request failed ->', error);
     } finally {
+      await clearActiveEmergencyId();
       router.replace('/');
     }
   };

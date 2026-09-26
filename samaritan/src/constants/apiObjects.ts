@@ -137,3 +137,29 @@ export interface DeleteEmergency {
     ECDSA_r: Number
     ECDSA_s: Number
 }
+
+/**
+ * JSON Format of reporting where you currently are for a given emergency
+ * 
+ * For POST /location/{emergencyId}/{label}, where label is "requester" or "responder"
+ * 
+ * Served by Front-end to Back-end
+ */
+export interface ReportLocation {
+    Latitude: Number
+    Longitude: Number
+}
+
+/**
+ * JSON Format Response of how far the responder currently is from the requester
+ * 
+ * Response from GET /location/{emergencyId}/distance
+ * 
+ * Served by Back-end to Front-end
+ */
+export interface DistanceToResponder {
+    Distance_Km: Number
+    Distance_Miles: Number
+    Responder_Latitude: Number
+    Responder_Longitude: Number
+}

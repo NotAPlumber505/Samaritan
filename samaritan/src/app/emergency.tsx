@@ -5,7 +5,8 @@ import { useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Dropdown from "../app/components/Dropdown";
 import { CreateEmergency, UpdateEmergency } from '../constants/apiObjects';
-import { createEmergency, updateEmergency } from '../utils/api';
+import { setActiveEmergencyId } from '../utils/activeEmergency';
+import { createEmergency, reportLocation, updateEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 import SubmitButton from './components/SubmitButton';
 
@@ -52,6 +53,19 @@ export default function EmergencyScreen() {
       const response = await createEmergency(payload);
       console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.Emergency_ID);
 
+      await setActiveEmergencyId(Number(response.Emergency_ID));
+
+      try {
+        console.log('[submitEmergency] Step 5: Reporting requester location...');
+        await reportLocation(Number(response.Emergency_ID), 'requester', {
+          Latitude: location.coords.latitude,
+          Longitude: location.coords.longitude,
+        });
+      } catch (reportError) {
+        // Non-fatal: the emergency was already created, so proceed even if the location report fails
+        console.log('[submitEmergency] Location report failed ->', reportError);
+      }
+
       if (emergencyType !== '' || text !== '') {
         const updatePayload: UpdateEmergency = {
           User_ID: '1', // TODO: replace with the real signed-in user's ID once auth exists
@@ -62,9 +76,9 @@ export default function EmergencyScreen() {
           ECDSA_s: 0,
         };
         try {
-          console.log('[submitEmergency] Step 5: Calling POST /emergency/update...');
+          console.log('[submitEmergency] Step 6: Calling POST /emergency/update...');
           await updateEmergency(updatePayload);
-          console.log('[submitEmergency] Step 6: Emergency details updated successfully');
+          console.log('[submitEmergency] Step 7: Emergency details updated successfully');
         } catch (updateError) {
           // Non-fatal: the emergency was already created, so proceed even if the details update fails
           console.log('[submitEmergency] Update failed ->', updateError);
