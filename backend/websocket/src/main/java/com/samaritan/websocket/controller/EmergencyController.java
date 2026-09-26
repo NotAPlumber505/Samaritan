@@ -12,7 +12,6 @@ import com.samaritan.utils.repositories.EmergencyTable;
 @RestController
 @RequestMapping("/emergency")
 public class EmergencyController {
-    @
     @PostMapping
     public ResponseEntity<CreateEmergencyResponse> postEmergency(@RequestBody CreateEmergency emergencyJSON) {
         int emergencyId = EmergencyTable.insertEmergency(emergencyJSON);
