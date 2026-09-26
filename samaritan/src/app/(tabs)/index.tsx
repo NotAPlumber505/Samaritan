@@ -6,7 +6,7 @@ import Button from '../components/EmergencyButton';
 
 export default function Index() {
   const router = useRouter();
-  const backendIp = "127.0.0.1"
+  const backendIp = "YOUR IP HERE| YOU CANNOT USE localhost, must be your local ip!"
   const fetchPostRest = async (publicKey:string ,dataSigned:string, data: string ) => {
     console.log("Sending fetch POST")
     const response = await fetch(`http://${backendIp}/verify`, {
