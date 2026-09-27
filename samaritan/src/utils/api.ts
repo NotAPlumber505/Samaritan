@@ -1,15 +1,15 @@
 import {
-    AcceptEmergency,
-    CreateEmergency,
-    CreateUser,
-    CreateUserResponse,
-    DeleteEmergency,
-    DistanceToResponder,
-    Emergencies,
-    EmergencyBackendResponse,
-    ReportLocation,
-    RequestEmergencies,
-    UpdateEmergency,
+  AcceptEmergency,
+  CreateEmergency,
+  CreateUser,
+  CreateUserResponse,
+  DeleteEmergency,
+  DistanceToResponder,
+  Emergencies,
+  EmergencyBackendResponse,
+  ReportLocation,
+  RequestEmergencies,
+  UpdateEmergency,
 } from '../constants/apiObjects';
 
 // Set EXPO_PUBLIC_API_BASE_URL in .env. When testing on a physical device/simulator,
@@ -51,7 +51,7 @@ async function apiRequest<T>(label: string, method: string, path: string, body?:
 /**
  * Sends a POST /user request to the backend to create a new user.
  */
-export function createUser(payload: CreateUser): Promise<CreateUserResponse> {
+export function postUser(payload: CreateUser): Promise<CreateUserResponse> {
   return apiRequest<CreateUserResponse>('createUser', 'POST', '/user', payload);
 }
 

@@ -2,7 +2,7 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { CreateUser } from '../../constants/apiObjects';
-import { createUser } from '../../utils/api';
+import { postUser } from '../../utils/api';
 import { getStoredProfile, setStoredProfile } from '../../utils/profileStore';
 
 export default function ProfileScreen() {
@@ -39,7 +39,7 @@ export default function ProfileScreen() {
 
     try {
       console.log('[profile] Calling POST /user...');
-      await createUser(payload);
+      await postUser(payload);
       await setStoredProfile(payload);
       setProfile(payload);
     } catch (error) {
