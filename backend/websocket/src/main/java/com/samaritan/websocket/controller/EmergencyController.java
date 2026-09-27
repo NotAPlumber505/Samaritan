@@ -51,16 +51,15 @@ public class EmergencyController {
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/nearby")
+    @GetMapping
     public ResponseEntity<List<Emergency>> getNearbyEmergencies(
-            @RequestParam double lat,
-            @RequestParam double lng,
-            @RequestParam(defaultValue = "5000") double radius) {
+            @RequestParam double Latitude,
+            @RequestParam double Longitude) {
 
-        if (lat < -90 || lat > 90 || lng < -180 || lng > 180 || radius <= 0) {
+        if (Latitude < -90 || Latitude > 90 || Longitude < -180 || Longitude > 180 || 2000 <= 0) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(emergencyRepository.findNearby(lat, lng, radius));
+        return ResponseEntity.ok(emergencyRepository.findNearby(Latitude, Longitude, 2000));
     }
 
 
