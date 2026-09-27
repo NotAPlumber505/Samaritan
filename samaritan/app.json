@@ -8,7 +8,8 @@
     "scheme": "samaritan",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.samaritan.samaritan"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +37,14 @@
         }
       ],
       "react-native-quick-crypto",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#FF383C"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
