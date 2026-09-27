@@ -39,7 +39,6 @@ public class EmergencyRepository {
         return id != null && emergencies.remove(id) != null;
     }
 
-
     public List<Emergency> findNearby(double originLat, double originLng, double radiusMeters) {
         return emergencies.values().stream()
                 .filter(e -> DistanceUtil.distanceKm(
@@ -48,6 +47,7 @@ public class EmergencyRepository {
                         originLat, originLng, e.getLatitude(), e.getLongitude())))
                 .toList();
     }
+
 
 
 
