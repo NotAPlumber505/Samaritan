@@ -1,5 +1,6 @@
 package com.samaritan.websocket.service;
 
+import com.samaritan.constants.api.UpdateEmergency;
 import com.samaritan.websocket.entity.EmergencyEntity;
 import com.samaritan.websocket.repository.EmergencyRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -45,16 +46,26 @@ public class EmergencyService {
         return true;
     }
     @Transactional
-    public EmergencyEntity updateEmergency(Long id, EmergencyEntity updatedData) {
+    public EmergencyEntity updateEmergency(Long id, UpdateEmergency updatedData) {
         return emergencyRepository.findById(id)
                 .map(existingEmergency -> {
-                    existingEmergency.setLatitude(updatedData.getLatitude());
-                    existingEmergency.setLongitude(updatedData.getLongitude());
-                    existingEmergency.setRequires911(updatedData.getRequires911());
-                    existingEmergency.setSelf_emergency(updatedData.getSelf_emergency());
-                    existingEmergency.setEmergency_nature(updatedData.getEmergency_nature());
-                    existingEmergency.setDescription(updatedData.getDescription());
-                    // Add any other fields that are allowed to change here...
+                    if (updatedData.latitude() != null)
+                        existingEmergency.setLatitude(updatedData.latitude());
+
+                    if (updatedData.longitude() != null)
+                        existingEmergency.setLongitude(updatedData.longitude());
+
+                    if (updatedData.requires_911() != null)
+                        existingEmergency.setRequires911(updatedData.requires_911());
+
+                    if (updatedData.self_emergency() != null)
+                        existingEmergency.setSelf_emergency(updatedData.self_emergency());
+
+                    if (updatedData.emergency_nature() != null)
+                        existingEmergency.setEmergency_nature(updatedData.emergency_nature());
+
+                    if (updatedData.description() != null)
+                        existingEmergency.setDescription(updatedData.description());
 
                     return emergencyRepository.save(existingEmergency);
                 })

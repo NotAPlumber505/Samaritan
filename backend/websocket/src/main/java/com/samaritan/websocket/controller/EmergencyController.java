@@ -36,7 +36,8 @@ public class EmergencyController {
         }
 
         EmergencyEntity emergency = new EmergencyEntity(request.user_id(), lat, lng, null, null, null, null);
-        return new ResponseEntity<>(new CreateEmergencyResponse(emergency.getEmergencyId()), HttpStatus.CREATED);
+        EmergencyEntity savedEmergency = emergencyService.saveEmergency(emergency);
+        return new ResponseEntity<>(new CreateEmergencyResponse(savedEmergency.getEmergencyId()), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/accept")
@@ -56,19 +57,22 @@ public class EmergencyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmergencyEntity>> getNearbyEmergencies(
+    public ResponseEntity<List<EmergencyDetails>> getNearbyEmergencies(
             @RequestParam double Latitude,
             @RequestParam double Longitude) {
 
         if (Latitude < -90 || Latitude > 90 || Longitude < -180 || Longitude > 180 || 2000 <= 0) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(emergencyService.getAllEmergencies());
+        List<EmergencyEntity> emergencies = emergencyService.getAllEmergencies();
+        List<EmergencyDetails> emergenciesButInDetailsClass = emergencies.stream().map(EmergencyDetails::new).toList();
+        return new ResponseEntity<>(, HttpStatus.CREATED);
     }
 
     @PostMapping("/update")
     public ResponseEntity<CreateEmergencyResponse> updateEmergency(@RequestBody UpdateEmergency json){
-        return new ResponseEntity<>(new CreateEmergencyResponse(emergencyService.updateEmergency((long) json.emergency_id(),new EmergencyEntity(json.user_id(), json.latitude(),json.longitude(),json.requires_911(),json.emergency_nature(), json.self_emergency() ,json.description())).getEmergencyId()), HttpStatus.CREATED);
+        EmergencyEntity updatedEmergency = emergencyService.updateEmergency((long) json.emergency_id(),json);
+        return new ResponseEntity<>(new CreateEmergencyResponse(updatedEmergency.getEmergencyId()), HttpStatus.CREATED);
 
 
     }
