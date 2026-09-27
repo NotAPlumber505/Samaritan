@@ -51,12 +51,14 @@ public class EmergencyService {
             throw new NotEmergencyOwnerException(emergencyId);
         }
 
-        EmergencyDetails details;
-        synchronized (emergency) {
-            emergency.applyUpdate(update);
-            details = emergency.toDetails();
+        emergency.applyUpdate(update);
+
+        // Persist before broadcasting, so watchers never see a change that wasn't saved
+        if (!repository.update(emergency)) {
+            throw new EmergencyNotFoundException(emergencyId); // deleted in the meantime
         }
 
+        EmergencyDetails details = emergency.toDetails();
         publisher.emergencyUpdated(emergencyId, details);
 
         return details;

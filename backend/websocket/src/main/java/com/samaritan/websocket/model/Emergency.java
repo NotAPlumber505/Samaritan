@@ -16,12 +16,18 @@ public class Emergency {
     private String description;
 
 
-    public Emergency(long id, long ownerUserId, double latitude, double longitude){
+    public Emergency(long id, long ownerUserId, Instant requestedAt,
+                     Double latitude, Double longitude, Boolean requires911,
+                     String emergencyType, String selfEmergency, String description) {
         this.id = id;
         this.ownerUserId = ownerUserId;
+        this.requestedAt = requestedAt;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.requestedAt = Instant.now();
+        this.requires911 = requires911;
+        this.emergencyType = emergencyType;
+        this.selfEmergency = selfEmergency;
+        this.description = description;
     }
 
     public void applyUpdate(UpdateEmergencyMessage u){
@@ -48,6 +54,16 @@ public class Emergency {
     public Double getLatitude(){ return latitude;}
 
     public Double getLongitude() { return longitude;}
+
+    public Instant getRequestedAt() { return requestedAt; }
+
+    public Boolean getRequires911() { return requires911; }
+
+    public String getEmergencyType() { return emergencyType; }
+
+    public String getSelfEmergency() { return selfEmergency; }
+
+    public String getDescription() { return description; }
 
 
     public long getUserId() {

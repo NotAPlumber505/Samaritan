@@ -8,3 +8,9 @@
 .env
 .env.*
 .DS_Store
+
+# Build output (Maven)
+target/
+
+# Local config with secrets (DB password etc.)
+application-local.properties

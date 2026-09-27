@@ -2,11 +2,13 @@ package com.samaritan.websocket.repository;
 
 import com.samaritan.websocket.service.DistanceUtil;
 
+import com.samaritan.constants.api.CreateEmergency;
 import com.samaritan.websocket.model.Emergency;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -19,22 +21,48 @@ public class EmergencyRepository {
     private static final RowMapper<Emergency> ROW_MAPPER = (rs, i) -> new Emergency(
             rs.getLong("id"),
             rs.getLong("owner_user_id"),
-            rs.getDouble("latitude"),
-            rs.getDouble("longitude"));
+            rs.getObject("requested_at", OffsetDateTime.class).toInstant(),
+            rs.getObject("latitude", Double.class),     // getObject keeps NULL as null, not 0.0
+            rs.getObject("longitude", Double.class),
+            rs.getObject("requires_911", Boolean.class),
+            rs.getString("emergency_type"),
+            rs.getString("self_emergency"),
+            rs.getString("description"));
 
     public EmergencyRepository(JdbcClient jdbc) {
         this.jdbc = jdbc;
     }
 
-    public Emergency create(long ownerUserId, double latitude, double longitude) {
-        long id = jdbc.sql("""
-                INSERT INTO emergencies (owner_user_id, latitude, longitude)
-                VALUES (?, ?, ?) RETURNING id
+    public Emergency create(CreateEmergency req) {
+        return jdbc.sql("""
+                INSERT INTO emergencies
+                    (owner_user_id, latitude, longitude, requires_911, emergency_type, self_emergency, description)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                RETURNING *
                 """)
-                .params(ownerUserId, latitude, longitude)
-                .query(Long.class)
+                .params(req.user_id(), req.latitude(), req.longitude(), req.requires_911(),
+                        req.emergency_type(), req.self_emergency(), req.description())
+                .query(ROW_MAPPER)
                 .single();
-        return new Emergency(id, ownerUserId, latitude, longitude);
+    }
+
+    // Location-only create, used by EmergencyService and TestPublishController
+    public Emergency create(long ownerUserId, double latitude, double longitude) {
+        return create(new CreateEmergency(ownerUserId, latitude, longitude,
+                null, null, null, null, null));
+    }
+
+    // Saves the fields that can change after creation
+    public boolean update(Emergency e) {
+        return jdbc.sql("""
+                UPDATE emergencies
+                SET latitude = ?, longitude = ?, requires_911 = ?,
+                    emergency_type = ?, self_emergency = ?, description = ?
+                WHERE id = ?
+                """)
+                .params(e.getLatitude(), e.getLongitude(), e.getRequires911(),
+                        e.getEmergencyType(), e.getSelfEmergency(), e.getDescription(), e.getId())
+                .update() > 0;
     }
 
     public Optional<Emergency> findById(long id) {

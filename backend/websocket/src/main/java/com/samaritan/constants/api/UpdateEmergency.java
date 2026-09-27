@@ -1,6 +1,6 @@
 package com.samaritan.constants.api;
 
-/** Request body for POST /emergency/update. The mock endpoint does not verify the signature. */
+/** Request body for POST /emergency/{id}/update. The path id wins over emergency_id; the signature is not verified yet. */
 public record UpdateEmergency(
         int emergency_id,
         Long user_id,
