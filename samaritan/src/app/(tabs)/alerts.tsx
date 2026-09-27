@@ -61,7 +61,7 @@ export default function AlertScreen() {
         refreshControl={<RefreshControl refreshing={isLoading} onRefresh={loadEmergencies} />}
       >
         {errorMessage ? <Text style={styles.message}>{errorMessage}</Text> : null}
-        {!errorMessage && !isLoading && emergencies.length === 0 ? (
+        {!errorMessage && !isLoading && !emergencies?.length ? (
           <Text style={styles.message}>No nearby emergencies right now.</Text>
         ) : null}
         {emergencies.map((emergency) => (
