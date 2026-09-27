@@ -20,7 +20,8 @@
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.samaritan.samaritan",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": ["android.permission.POST_NOTIFICATIONS"]
     },
     "web": {
       "output": "static",
@@ -45,6 +46,7 @@
           "color": "#FF383C"
         }
       ]
+      
     ],
     "experiments": {
       "typedRoutes": true,
