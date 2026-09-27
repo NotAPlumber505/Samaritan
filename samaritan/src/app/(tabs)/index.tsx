@@ -12,9 +12,11 @@ export default function Index() {
 
   useEffect(() => {
     (async () => {
-      const isFirstBoot = await Storage.getItem("firstBootComplete")
-      if(!isFirstBoot) {
+      const isFirstBootComplete = await Storage.getItem("firstBootComplete")
+      if(!isFirstBootComplete) {
+        console.log(isFirstBootComplete)
         setFirstBoot(true)
+        console.log("No first boot detected!")
       }
     })()
   },[])
