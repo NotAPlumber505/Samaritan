@@ -44,6 +44,10 @@ public class Emergency {
         return ownerUserId;
     }
 
+    public Double getLatitude(){ return latitude;}
+
+    public Double getLongitude() { return longitude;}
+
 
 
 
