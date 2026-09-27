@@ -28,6 +28,22 @@
     "plugins": [
       "expo-router",
       [
+        "expo-notifications",
+        {
+          "defaultChannel": "emergency-alerts"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Samaritan to use your location to find nearby emergencies.",
+          "locationAlwaysAndWhenInUsePermission": "Allow Samaritan to share your location with nearby people you can help.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true,
+          "isIosBackgroundLocationEnabled": true
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",

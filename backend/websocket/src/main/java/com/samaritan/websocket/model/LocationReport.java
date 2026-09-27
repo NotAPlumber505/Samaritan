@@ -1,18 +1,10 @@
 package com.samaritan.websocket.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class LocationReport {
 
-    @NonNull
-    @JsonProperty("Latitude")
     private Double latitude;
 
 
-    @NonNull
-    @JsonProperty("Longitude")
     private Double longitude;
 
 
@@ -30,7 +22,6 @@ public class LocationReport {
     private String emergencyType;
     private String selfEmergency;
     private String description;
-    @JsonProperty("Label")
     private String label;
 
     public LocationReport(){

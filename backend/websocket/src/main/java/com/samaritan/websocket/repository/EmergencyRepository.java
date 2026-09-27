@@ -1,24 +1,20 @@
 package com.samaritan.websocket.repository;
 
-import com.samaritan.websocket.service.DistanceUtil;
-
-import com.samaritan.constants.api.CreateEmergency;
-import com.samaritan.websocket.model.Emergency;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.stereotype.Repository;
-
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+import com.samaritan.constants.api.CreateEmergency;
+import com.samaritan.websocket.model.Emergency;
+import com.samaritan.websocket.service.DistanceUtil;
+
+@org.springframework.stereotype.Repository
 public class EmergencyRepository {
 
-    private final JdbcClient jdbc;
+    private final org.springframework.jdbc.core.simple.JdbcClient jdbc;
 
-    private static final RowMapper<Emergency> ROW_MAPPER = (rs, i) -> new Emergency(
+    private static final org.springframework.jdbc.core.RowMapper<Emergency> ROW_MAPPER = (rs, i) -> new Emergency(
             rs.getLong("id"),
             rs.getLong("owner_user_id"),
             rs.getObject("requested_at", OffsetDateTime.class).toInstant(),
@@ -29,27 +25,25 @@ public class EmergencyRepository {
             rs.getString("self_emergency"),
             rs.getString("description"));
 
-    public EmergencyRepository(JdbcClient jdbc) {
+    public EmergencyRepository(org.springframework.jdbc.core.simple.JdbcClient jdbc) {
         this.jdbc = jdbc;
     }
 
     public Emergency create(CreateEmergency req) {
         return jdbc.sql("""
                 INSERT INTO emergencies
-                    (owner_user_id, latitude, longitude, requires_911, emergency_type, self_emergency, description)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                    (owner_user_id, latitude, longitude)
+                VALUES (?, ?, ?)
                 RETURNING *
                 """)
-                .params(req.user_id(), req.latitude(), req.longitude(), req.requires_911(),
-                        req.emergency_type(), req.self_emergency(), req.description())
+                .params(req.user_id(), req.latitude(), req.longitude())
                 .query(ROW_MAPPER)
                 .single();
     }
 
     // Location-only create, used by EmergencyService and TestPublishController
     public Emergency create(long ownerUserId, double latitude, double longitude) {
-        return create(new CreateEmergency(ownerUserId, latitude, longitude,
-                null, null, null, null, null));
+        return create(new CreateEmergency(ownerUserId, latitude, longitude, null));
     }
 
     // Saves the fields that can change after creation
@@ -80,6 +74,12 @@ public class EmergencyRepository {
         return jdbc.sql("DELETE FROM emergencies WHERE id = ?").param(id).update() > 0;
     }
 
+    public boolean deleteByIdAndOwner(long id, long ownerUserId) {
+        return jdbc.sql("DELETE FROM emergencies WHERE id = ? AND owner_user_id = ?")
+                .params(id, ownerUserId)
+                .update() > 0;
+    }
+
     public List<Emergency> findNearby(double originLat, double originLng, double radiusMeters) {
         // Cheap bounding-box filter in SQL, then an exact distance check in Java
         double latDelta = radiusMeters / 111_320.0;
@@ -97,7 +97,7 @@ public class EmergencyRepository {
                 .stream()
                 .filter(e -> DistanceUtil.distanceInMeters(
                         originLat, originLng, e.getLatitude(), e.getLongitude()) <= radiusMeters)
-                .sorted(Comparator.comparingDouble(e -> DistanceUtil.distanceInMeters(
+                .sorted(Comparator.comparingDouble((Emergency e) -> DistanceUtil.distanceInMeters(
                         originLat, originLng, e.getLatitude(), e.getLongitude())))
                 .toList();
     }

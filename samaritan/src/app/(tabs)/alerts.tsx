@@ -1,6 +1,6 @@
 import * as Location from 'expo-location';
-import { router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { EmergencyDetails } from '../../constants/apiObjects';
 import { getEmergencies } from '../../utils/api';
@@ -46,9 +46,9 @@ export default function AlertScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadEmergencies();
-  }, [loadEmergencies]);
+  useFocusEffect(useCallback(() => {
+    void loadEmergencies();
+  }, [loadEmergencies]));
 
   const openDetails = (emergency: EmergencyDetails) => {
     router.push({ pathname: '../alert-details', params: { emergency: JSON.stringify(emergency) } });

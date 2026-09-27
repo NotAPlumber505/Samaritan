@@ -9,6 +9,8 @@ export interface CreateUser {
     ecdsa_public_key: String
     is_samaritan: boolean //Opt-in: true if the user agreed, on first app open, to respond to nearby emergencies
     push_token?: String //Expo push notification token, used to notify this user of nearby emergencies
+    latitude?: number
+    longitude?: number
     // Post-MVP: Name?: String, Allergies?: String, Bio?: String
 }
 

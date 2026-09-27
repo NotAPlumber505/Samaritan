@@ -1,28 +1,29 @@
+import { signData } from '@/utils/ecdsa';
+import { getItem, getSecureItem } from '@/utils/store';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { DeleteEmergency } from '../constants/apiObjects';
 import { clearActiveEmergencyId } from '../utils/activeEmergency';
 import { deleteEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
-import { getItem } from 'expo-secure-store';
-import { signData } from '@/utils/ecdsa';
-import { getSecureItem } from '@/utils/store';
 
 export default function EmergencyStatusScreen() {
   const { emergencyId } = useLocalSearchParams<{ emergencyId: string }>();
 
   const cancelEmergency = async () => {
-    const payload: DeleteEmergency = {
-      user_id: Number(await getItem("user_id")),
-      emergency_id: Number(emergencyId),
-      ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
-        JSON.stringify({
-        user_id: Number(await getItem("user_id")),
-        emergency_id: Number(emergencyId),
-      })))
-    };
-
     try {
+      const storedUserId = await getItem('user_id');
+      if (!storedUserId) throw new Error('User information is unavailable.');
+      const unsignedPayload = {
+        user_id: Number(storedUserId),
+        emergency_id: Number(emergencyId),
+      };
+      const signature = signData(
+        getSecureItem('ecdsaPrivateKey') ?? '',
+        JSON.stringify(unsignedPayload),
+      );
+      if (!signature) throw new Error('Could not sign the cancellation request.');
+      const payload: DeleteEmergency = { ...unsignedPayload, ecdsa_signature: String(signature) };
       console.log('[cancelEmergency] Calling DELETE /emergency/', emergencyId);
       await deleteEmergency(Number(emergencyId), payload);
       console.log('[cancelEmergency] Emergency deleted successfully');

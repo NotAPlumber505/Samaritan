@@ -29,6 +29,10 @@ public final class DistanceUtil {
         return distanceKm(lat1, lon1, lat2, lon2) * 0.621371;
     }
 
+    public static double distanceInMeters(double lat1, double lon1, double lat2, double lon2){
+        return distanceKm(lat1, lon1, lat2, lon2) * 1000;
+    }
+
 
 
 }

@@ -1,11 +1,11 @@
+import { signData } from '@/utils/ecdsa';
+import { getItem, getSecureItem } from '@/utils/store';
 import * as Location from 'expo-location';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmergencyDetails } from '../constants/apiObjects';
 import { setActiveEmergencyId } from '../utils/activeEmergency';
 import { acceptEmergency, reportLocation } from '../utils/api';
-import { getItem, getSecureItem } from '@/utils/store';
-import { signData } from '@/utils/ecdsa';
 
 export default function AlertDetailsScreen() {
   const { emergency: emergencyParam } = useLocalSearchParams<{ emergency: string }>();
@@ -16,15 +16,21 @@ export default function AlertDetailsScreen() {
     const emergencyId = Number(emergency.emergency_id);
 
     try {
+      const storedUserId = await getItem('user_id');
+      if (!storedUserId) throw new Error('User information is unavailable.');
+      const unsignedPayload = {
+        user_id: Number(storedUserId),
+        emergency_id: emergencyId,
+      };
+      const signature = signData(
+        getSecureItem('ecdsaPrivateKey') ?? '',
+        JSON.stringify(unsignedPayload),
+      );
+      if (!signature) throw new Error('Could not sign the acceptance request.');
       console.log('[acceptThisEmergency] Step 1: Calling POST /emergency/{id}/accept...');
       await acceptEmergency({
-        user_id: Number(await getItem("user_id")),
-        emergency_id: emergencyId,
-        ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
-              JSON.stringify({
-              user_id: Number(await getItem("user_id")),
-              emergency_id: emergencyId,
-            }))),
+        ...unsignedPayload,
+        ecdsa_signature: String(signature),
       });
       console.log('[acceptThisEmergency] Step 2: Emergency accepted');
 

@@ -1,76 +1,60 @@
-import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import { requestNotificationsPermissions } from '@/utils/notifications';
 import { requestBackgroundLocationPermissions, requestForegroundLocationPermissions } from '@/utils/locations';
-import { createUser } from '@/utils/user';
+import { requestNotificationsPermissions } from '@/utils/notifications';
 import { setItem } from '@/utils/store';
+import { createUser } from '@/utils/user';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 
 export default function FirstBootModal() { 
-  type ModalState = "" |"samaritanNotificationPrompt" | "approximateLocationPrompt" | "approximateLocationContinue" | "finished";
-  const [modalState,setModalState] = useState<ModalState>("")
+  type ModalState = 'intro' | 'choice' | 'backgroundPrompt' | 'submitting' | 'failed';
+  const [modalState, setModalState] = useState<ModalState>('intro');
   const [visible, setVisible] = useState(true)
-  const [modalText, setModalText] = useState("")
+  const [modalText, setModalText] = useState(
+    'Samaritan needs foreground location to submit emergencies. You can opt in to share location in the background and receive alerts for nearby emergencies.',
+  );
+  const [retryAsSamaritan, setRetryAsSamaritan] = useState(false);
 
+  const finishSetup = async (isSamaritan: boolean) => {
+    setRetryAsSamaritan(isSamaritan);
+    setModalState('submitting');
+    setModalText('Requesting permissions and finishing setup...');
+    try {
+      const foregroundEnabled = await requestForegroundLocationPermissions();
+      await setItem('foregroundEnabled', String(foregroundEnabled));
+      if (!foregroundEnabled) {
+        throw new Error('Foreground location permission is required to submit emergencies.');
+      }
 
-  const modalOkFunction = () => {
-    switch (modalState) {
-      case "samaritanNotificationPrompt":
-        (async () => {
-            setItem("foregroundEnabled",String(await requestForegroundLocationPermissions()))
-        })()
-        setModalText("Samaritan uses notifications to alert whenever someone nearby has an emergency.\n\n You can choose to Opt In or Opt Out of this feature")
-        //Next modal state determined by buttons, hence the lack of next state setting.
-        break;
-      case "approximateLocationPrompt": 
-        (async () => {
-          setItem("is_samaritan","true")
-          setItem("notificationsEnabled",String(await requestNotificationsPermissions()))
-        })()
-        setModalText("Samaritain needs your approximate location whenever you're not using the app so that we can send emergencies that are close to you! ")
-        setModalState("approximateLocationContinue")
-        break;
-      case "approximateLocationContinue":
-        (async () => {
-          setItem("backgroundLocationEnabled",String(await requestBackgroundLocationPermissions));
-        })()
-        //No break allows it to move on to finish first time setup
-      case "finished":
-        (async () => {
-          setModalText("Finishing setup, please wait...")
-          try {await createUser(modalState === "approximateLocationContinue")}
-          //This catch should change to check if back-end server is accessable. But this is a prototype. So like..
-          catch(e) {
-            setModalText("Failed to finish setup! Ensure you are connected to the internet. Contact samaritanapp@gmail.com If you believe this to be an error. Press OK to try again")
-            return
-          }
-          await setItem("firstBootComplete","true")
-          setVisible(false)
-        })()
-        break;
-      default:
-        setModalText("Samaritan requires precise location permissions to send out your location when using the Emergency button.\n\n When asked, please allow precise location permissions!")
+      if (isSamaritan) {
+        const notificationsEnabled = await requestNotificationsPermissions();
+        await setItem('notificationsEnabled', String(notificationsEnabled));
+        const backgroundEnabled = await requestBackgroundLocationPermissions();
+        await setItem('backgroundLocationEnabled', String(backgroundEnabled));
+      }
+
+      await createUser(isSamaritan)
+      await setItem("firstBootComplete", "true")
+      setVisible(false)
+    } catch (error) {
+      console.warn('[firstBoot] Setup failed:', error);
+      setModalText(error instanceof Error
+        ? `${error.message} Retry, or continue without opting in.`
+        : 'Setup failed. Check your connection and try again.');
+      setModalState('failed');
     }
   }
-  useEffect(() => {
-    modalOkFunction()
-  },[modalState])
 
-  const modalContinue = () => {
-    console.log(modalState)
-    switch(modalState) {
-      case "":
-        setModalState("samaritanNotificationPrompt")
-        break;
-      case "approximateLocationPrompt":
-        setModalState("approximateLocationContinue")
-        break;
-      case "approximateLocationContinue":
-      case "finished" :
-        setModalState("") 
+  const continueSetup = () => {
+    if (modalState === 'intro') {
+      setModalText('Opt in to help: Samaritan will share your location and send emergency alerts within 2 km. You can also continue as a requester only.');
+      setModalState('choice');
+    } else if (modalState === 'backgroundPrompt') {
+      void finishSetup(true);
+    } else if (modalState === 'failed') {
+      void finishSetup(retryAsSamaritan);
     }
-    
-  }
+  };
 
 
   
@@ -79,20 +63,28 @@ export default function FirstBootModal() {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.modalText}>{modalText}</Text>
-            {modalState != "samaritanNotificationPrompt" && (
-            <Pressable style={styles.buttonClose} onPress={modalContinue}>
-              <Text style={styles.textStyle}>OK</Text>
-            </Pressable>
+            {(modalState === 'intro' || modalState === 'backgroundPrompt' || modalState === 'failed') && (
+              <Pressable style={styles.buttonClose} onPress={continueSetup}>
+                <Text style={styles.textStyle}>{modalState === 'failed' ? 'Retry' : 'Continue'}</Text>
+              </Pressable>
             )}
-            {modalState == "samaritanNotificationPrompt" && (
+            {modalState === 'choice' && (
             <>
-              <Pressable style={styles.buttonClose} onPress={() => { setModalState("approximateLocationPrompt");}}>
+              <Pressable style={styles.buttonClose} onPress={() => {
+                setModalText('Background location lets nearby Samaritan alerts reach you when the app is closed. Android may open system settings to grant this permission.');
+                setModalState('backgroundPrompt');
+              }}>
                 <Text style={styles.textStyle}>Opt In</Text>
               </Pressable>
-              <Pressable style={styles.buttonClose} onPress={() => { setModalState("finished");}}>
+              <Pressable style={styles.buttonClose} onPress={() => { void finishSetup(false); }}>
                 <Text style={styles.textStyle}>Opt Out</Text>
               </Pressable>
             </>
+            )}
+            {modalState === 'failed' && retryAsSamaritan && (
+              <Pressable style={styles.buttonClose} onPress={() => { void finishSetup(false); }}>
+                <Text style={styles.textStyle}>Continue without opting in</Text>
+              </Pressable>
             )}
         </View>
       </View>

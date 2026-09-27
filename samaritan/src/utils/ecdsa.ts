@@ -22,12 +22,13 @@ export function generateECDSAKeyPair() {
  * @param data 
  * @returns 
  */
-export function signData(ecdsaPrivateKey: string, data: string) {
+export function signData(ecdsaPrivateKey: string, data: string): string | undefined {
     try
     {
         const sign = crypto.createSign("SHA256");
         sign.update(data)
-        return sign.sign(ecdsaPrivateKey, 'base64')
+        const signature = sign.sign(ecdsaPrivateKey, 'base64');
+        return typeof signature === 'string' ? signature : signature.toString('base64');
     }
     catch (error) {
         console.log("Exception while creating keypair! Here's the exception:\n" + error)

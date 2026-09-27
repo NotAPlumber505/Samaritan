@@ -1,0 +1,13 @@
+com\samaritan\websocket\config\FirebaseMessagingConfiguration.class
+com\samaritan\websocket\controller\UserController.class
+com\samaritan\constants\api\SamaritanLocationUpdate.class
+com\samaritan\websocket\model\SamaritanPushRecipient.class
+com\samaritan\websocket\repository\SamaritanLocationRepository.class
+com\samaritan\constants\api\PushTokenUpdate.class
+com\samaritan\websocket\exception\NotSamaritanException.class
+com\samaritan\websocket\service\EmergencyPushService.class
+com\samaritan\websocket\repository\EmergencyAcceptanceRepository.class
+com\samaritan\utils\SignaturePayloads.class
+com\samaritan\websocket\exception\InvalidSignatureException.class
+com\samaritan\websocket\repository\UserRepository.class
+com\samaritan\websocket\config\JdbcClientConfiguration.class

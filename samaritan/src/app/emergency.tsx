@@ -1,21 +1,29 @@
+import { signData } from '@/utils/ecdsa';
+import { getItem, getSecureItem } from '@/utils/store';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
-import { useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Dropdown from "../app/components/Dropdown";
-import { CreateEmergency, UpdateEmergency } from '../constants/apiObjects';
+import { CreateEmergency } from '../constants/apiObjects';
 import { setActiveEmergencyId } from '../utils/activeEmergency';
-import { createEmergency, reportLocation, updateEmergency } from '../utils/api';
+import { createEmergency, reportLocation } from '../utils/api';
 import CancelButton from './components/CancelButton';
 import SubmitButton from './components/SubmitButton';
-import { getItem, getSecureItem } from '@/utils/store';
-import { signData } from '@/utils/ecdsa';
 
 export default function EmergencyScreen() {
   const [emergencyType, setEmergencyType] = useState("");
   const [text, setText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const cancelEmergency = () => {
     router.replace('/');
@@ -27,35 +35,51 @@ export default function EmergencyScreen() {
     }
     setIsSubmitting(true);
 
-    console.log('[submitEmergency] Step 1: Requesting location permission...');
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Location Permission Required', 'Please allow location access to submit an emergency.');
-      return;
-    }
-
-    const location = await Location.getLastKnownPositionAsync({});
-    if (!location) {
-      Alert.alert('Location unavailable', 'Unable to find your last known location. Please try again.');
-      return;
-    }
-    console.log('[submitEmergency] Step 2: Location found ->', location.coords);
-
-    const payload: CreateEmergency = {
-      user_id: Number(await getItem("user_id")),
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-      ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
-      JSON.stringify({
-      user_id: Number(getItem("user_id")),
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    })))
-    };
-
     try {
+      console.log('[submitEmergency] Step 1: Requesting location permission...');
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (!isMounted.current) return;
+      if (status !== 'granted') {
+        Alert.alert('Location Permission Required', 'Please allow location access to submit an emergency.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const location = await Location.getLastKnownPositionAsync({});
+      if (!isMounted.current) return;
+      if (!location) {
+        Alert.alert('Location unavailable', 'Unable to find your last known location. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+      console.log('[submitEmergency] Step 2: Location found ->', location.coords);
+
+      const storedUserId = await getItem('user_id');
+      if (!isMounted.current) return;
+      if (!storedUserId) {
+        Alert.alert('User information unavailable', 'Complete app setup before submitting an emergency.');
+        setIsSubmitting(false);
+        return;
+      }
+      const unsignedPayload = {
+        user_id: Number(storedUserId),
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      const signature = signData(
+        getSecureItem('ecdsaPrivateKey') ?? '',
+        JSON.stringify(unsignedPayload),
+      );
+      if (!signature) {
+        Alert.alert('Signing failed', 'Could not verify your emergency request. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+      const payload: CreateEmergency = { ...unsignedPayload, ecdsa_signature: String(signature) };
+
       console.log('[submitEmergency] Step 3: Calling POST /emergency...');
       const response = await createEmergency(payload);
+      if (!isMounted.current) return;
       console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.emergency_id);
 
       await setActiveEmergencyId(Number(response.emergency_id));
@@ -71,32 +95,20 @@ export default function EmergencyScreen() {
         console.log('[submitEmergency] Location report failed ->', reportError);
       }
 
-      if (emergencyType !== '' || text !== '') {
-        const updatePayload: UpdateEmergency = {
-          user_id: Number(await getItem("user_id")),
-          emergency_id: response.emergency_id,
-          emergency_nature: emergencyType || undefined,
-          description: text || undefined,
-          ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
-            JSON.stringify({
-            user_id: Number(await getItem("user_id")),
-            emergency_id: response.emergency_id,
-            emergency_nature: emergencyType || undefined,
-            description: text || undefined,
-          })))
-        };
-        try {
-          console.log('[submitEmergency] Step 6: Calling POST /emergency/update...');
-          await updateEmergency(updatePayload);
-          console.log('[submitEmergency] Step 7: Emergency details updated successfully');
-        } catch (updateError) {
-          // Non-fatal: the emergency was already created, so proceed even if the details update fails
-          console.log('[submitEmergency] Update failed ->', updateError);
-        }
-      }
-
-      router.replace({ pathname: '/emergency-status', params: { emergencyId: String(response.emergency_id) } });
+      if (!isMounted.current) return;
+      setIsSubmitting(false);
+      router.push({
+        pathname: '/new-alert-details',
+        params: {
+          emergencyId: String(response.emergency_id),
+          emergencyType,
+          description: text,
+          latitude: String(location.coords.latitude),
+          longitude: String(location.coords.longitude),
+        },
+      });
     } catch (error) {
+      if (!isMounted.current) return;
       console.log('[submitEmergency] Request failed ->', error);
       Alert.alert('Submission failed', 'Could not submit your emergency. Please check your connection and try again.');
       setIsSubmitting(false);
