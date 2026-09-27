@@ -9,6 +9,8 @@ import { setActiveEmergencyId } from '../utils/activeEmergency';
 import { createEmergency, reportLocation, updateEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
 import SubmitButton from './components/SubmitButton';
+import { getItem, getSecureItem } from '@/utils/store';
+import { signData } from '@/utils/ecdsa';
 
 export default function EmergencyScreen() {
   const [emergencyType, setEmergencyType] = useState("");
@@ -39,12 +41,16 @@ export default function EmergencyScreen() {
     }
     console.log('[submitEmergency] Step 2: Location found ->', location.coords);
 
-    // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
     const payload: CreateEmergency = {
-      user_id: 1,
+      user_id: Number(await getItem("user_id")),
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
-      ecdsa_signature: ""
+      ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
+      JSON.stringify({
+      user_id: Number(getItem("user_id")),
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    })))
     };
 
     try {
@@ -67,11 +73,17 @@ export default function EmergencyScreen() {
 
       if (emergencyType !== '' || text !== '') {
         const updatePayload: UpdateEmergency = {
-          user_id: '1', // TODO: replace with the real signed-in user's ID once auth exists
+          user_id: Number(await getItem("user_id")),
           emergency_id: response.emergency_id,
           emergency_nature: emergencyType || undefined,
           description: text || undefined,
-          ecdsa_signature: ""
+          ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
+            JSON.stringify({
+            user_id: Number(await getItem("user_id")),
+            emergency_id: response.emergency_id,
+            emergency_nature: emergencyType || undefined,
+            description: text || undefined,
+          })))
         };
         try {
           console.log('[submitEmergency] Step 6: Calling POST /emergency/update...');
@@ -83,7 +95,7 @@ export default function EmergencyScreen() {
         }
       }
 
-      router.replace({ pathname: '/emergency-status', params: { emergencyId: String(response.Emergency_ID) } });
+      router.replace({ pathname: '/emergency-status', params: { emergencyId: String(response.emergency_id) } });
     } catch (error) {
       console.log('[submitEmergency] Request failed ->', error);
       Alert.alert('Submission failed', 'Could not submit your emergency. Please check your connection and try again.');

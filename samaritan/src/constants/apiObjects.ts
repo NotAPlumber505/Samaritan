@@ -45,7 +45,7 @@ export interface CreateEmergency {
  * Served by Front-end to Back-end 
 */
 export interface UpdateEmergency {
-    user_id: String
+    user_id: Number
     emergency_id: Number
     latitude?: Number
     longitude?: Number
