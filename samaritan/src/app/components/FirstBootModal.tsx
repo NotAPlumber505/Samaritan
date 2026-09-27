@@ -1,10 +1,9 @@
-
-import Storage from 'expo-sqlite/kv-store';
 import { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { requestNotificationsPermissions } from '@/utils/notifications';
 import { requestBackgroundLocationPermissions, requestForegroundLocationPermissions } from '@/utils/locations';
 import { createUser } from '@/utils/user';
+import { setItem } from '@/utils/store';
 
 
 export default function FirstBootModal() { 
@@ -18,22 +17,22 @@ export default function FirstBootModal() {
     switch (modalState) {
       case "samaritanNotificationPrompt":
         (async () => {
-            Storage.setItem("foregroundEnabled",String(await requestForegroundLocationPermissions()))
+            setItem("foregroundEnabled",String(await requestForegroundLocationPermissions()))
         })()
         setModalText("Samaritan uses notifications to alert whenever someone nearby has an emergency.\n\n You can choose to Opt In or Opt Out of this feature")
         //Next modal state determined by buttons, hence the lack of next state setting.
         break;
       case "approximateLocationPrompt": 
         (async () => {
-          Storage.setItem("Samaritan","true")
-          Storage.setItem("notifications",String(await requestNotificationsPermissions()))
+          setItem("is_samaritan","true")
+          setItem("notificationsEnabled",String(await requestNotificationsPermissions()))
         })()
         setModalText("Samaritain needs your approximate location whenever you're not using the app so that we can send emergencies that are close to you! ")
         setModalState("approximateLocationContinue")
         break;
       case "approximateLocationContinue":
         (async () => {
-          Storage.setItem("backgroundLocationEnabled",String(await requestBackgroundLocationPermissions));
+          setItem("backgroundLocationEnabled",String(await requestBackgroundLocationPermissions));
         })()
         //No break allows it to move on to finish first time setup
       case "finished":
@@ -45,7 +44,7 @@ export default function FirstBootModal() {
             setModalText("Failed to finish setup! Ensure you are connected to the internet. Contact samaritanapp@gmail.com If you believe this to be an error. Press OK to try again")
             return
           }
-          await Storage.setItem("firstBootComplete","true")
+          await setItem("firstBootComplete","true")
           setVisible(false)
         })()
         break;
