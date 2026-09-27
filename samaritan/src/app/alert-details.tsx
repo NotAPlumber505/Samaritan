@@ -11,15 +11,14 @@ export default function AlertDetailsScreen() {
 
   const acceptThisEmergency = async () => {
     if (!emergency) return;
-    const emergencyId = Number(emergency.Emergency_ID);
+    const emergencyId = Number(emergency.emergency_id);
 
     try {
       console.log('[acceptThisEmergency] Step 1: Calling POST /emergency/{id}/accept...');
       await acceptEmergency({
-        User_ID: '1', // TODO: replace with the real signed-in user's ID once auth exists
-        Emergency_ID: emergencyId,
-        ECDSA_r: 0,
-        ECDSA_s: 0,
+        user_id: '1', // TODO: replace with the real signed-in user's ID once auth exists
+        emergency_id: emergencyId,
+        ecdsa_signature: "",
       });
       console.log('[acceptThisEmergency] Step 2: Emergency accepted');
 
@@ -33,8 +32,8 @@ export default function AlertDetailsScreen() {
           try {
             console.log('[acceptThisEmergency] Step 4: Reporting responder location...');
             await reportLocation(emergencyId, 'responder', {
-              Latitude: location.coords.latitude,
-              Longitude: location.coords.longitude,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
             });
           } catch (reportError) {
             // Non-fatal: the emergency was already accepted, so proceed even if the location report fails
@@ -71,14 +70,14 @@ export default function AlertDetailsScreen() {
       <Text style={styles.title}>Emergency Details</Text>
 
       <View style={styles.details}>
-        <Detail label="Emergency type" value={String(emergency.Emergency_Type ?? 'Unknown')} />
-        <Detail label="Location" value={`${emergency.Latitude ?? '?'}, ${emergency.Longitude ?? '?'}`} />
-        <Detail label="Requires 911" value={emergency.Requires_911 ? 'Yes' : 'No'} />
+        <Detail label="Emergency type" value={String(emergency.emergency_type ?? 'Unknown')} />
+        <Detail label="Location" value={`${emergency.latitude ?? '?'}, ${emergency.longitude ?? '?'}`} />
+        <Detail label="Requires 911" value={emergency.requires_911 ? 'Yes' : 'No'} />
         <Detail
           label="Time requested"
-          value={emergency.Requested_At ? new Date(String(emergency.Requested_At)).toLocaleString() : 'Unknown'}
+          value={emergency.requested_at ? new Date(String(emergency.requested_at)).toLocaleString() : 'Unknown'}
         />
-        <Detail label="Description" value={String(emergency.Description ?? 'No description provided')} />
+        <Detail label="Description" value={String(emergency.description ?? 'No description provided')} />
       </View>
 
       <View style={styles.actions}>
