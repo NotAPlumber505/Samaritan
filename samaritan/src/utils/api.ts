@@ -74,8 +74,8 @@ export function updateEmergency(payload: UpdateEmergency): Promise<EmergencyBack
  */
 export function getEmergencies(payload: RequestEmergencies): Promise<Emergencies> {
   const query = new URLSearchParams({
-    Latitude: String(payload.Latitude),
-    Longitude: String(payload.Longitude),
+    Latitude: String(payload.latitude),
+    Longitude: String(payload.longitude),
   });
   return apiRequest<Emergencies>('getEmergencies', 'GET', `/emergency?${query.toString()}`);
 }
@@ -87,7 +87,7 @@ export function acceptEmergency(payload: AcceptEmergency): Promise<EmergencyBack
   return apiRequest<EmergencyBackendResponse>(
     'acceptEmergency',
     'POST',
-    `/emergency/${payload.Emergency_ID}/accept`,
+    `/emergency/${payload.emergency_id}/accept`,
     payload,
   );
 }

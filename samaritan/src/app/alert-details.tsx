@@ -4,6 +4,8 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { EmergencyDetails } from '../constants/apiObjects';
 import { setActiveEmergencyId } from '../utils/activeEmergency';
 import { acceptEmergency, reportLocation } from '../utils/api';
+import { getItem, getSecureItem } from '@/utils/store';
+import { signData } from '@/utils/ecdsa';
 
 export default function AlertDetailsScreen() {
   const { emergency: emergencyParam } = useLocalSearchParams<{ emergency: string }>();
@@ -16,9 +18,13 @@ export default function AlertDetailsScreen() {
     try {
       console.log('[acceptThisEmergency] Step 1: Calling POST /emergency/{id}/accept...');
       await acceptEmergency({
-        user_id: '1', // TODO: replace with the real signed-in user's ID once auth exists
+        user_id: Number(await getItem("user_id")),
         emergency_id: emergencyId,
-        ecdsa_signature: "",
+        ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
+              JSON.stringify({
+              user_id: Number(await getItem("user_id")),
+              emergency_id: emergencyId,
+            }))),
       });
       console.log('[acceptThisEmergency] Step 2: Emergency accepted');
 

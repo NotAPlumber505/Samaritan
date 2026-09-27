@@ -116,7 +116,7 @@ export interface EmergencyDetails {
  * Accepts an emergency
  */
 export interface AcceptEmergency {
-    user_id: String
+    user_id: Number
     emergency_id: Number
     ecdsa_signature: String
 }
