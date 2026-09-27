@@ -18,7 +18,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.samaritan"
+      "package": "com.samaritan.samaritan",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -34,7 +35,8 @@
           "imageWidth": 76
         }
       ],
-      "react-native-quick-crypto"
+      "react-native-quick-crypto",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true,

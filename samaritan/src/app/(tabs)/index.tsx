@@ -1,14 +1,34 @@
 import { useRouter } from 'expo-router';
+import Storage from 'expo-sqlite/kv-store';
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from 'react-native';
 import Button from '../components/EmergencyButton';
+import FirstBootModal from '../components/FirstBootModal';
 
 export default function Index() {
   const router = useRouter();
+  const [firstBoot, setFirstBoot] = useState(false)
+
+
+  useEffect(() => {
+    (async () => {
+      const isFirstBootComplete = await Storage.getItem("firstBootComplete")
+      if(!isFirstBootComplete) {
+        console.log(isFirstBootComplete)
+        setFirstBoot(true)
+        console.log("No first boot detected!")
+      }
+    })()
+  },[])
+
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Connect people who can help with people who need help.</Text>
       <View>
+        {firstBoot && (
+        <FirstBootModal/>
+      )} 
         <Button 
         label="Request Emergency Help"
         onPress={() => router.push('/emergency')}
