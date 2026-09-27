@@ -14,7 +14,6 @@ export default function Index() {
         onPress={() => router.push('/emergency')}
         />
       </View>
-      <Text style={[styles.text, { fontWeight: 'bold' }]}> Nearby Samaritans: 12 </Text>
       <Text style={styles.hintText}>
         Want to help others nearby? You can opt in to be a Samaritan from the Profile tab.
       </Text>
