@@ -32,9 +32,9 @@ export default function ProfileScreen() {
 
     // Post-MVP: collect Name/Allergies/Bio here; ECDSA_public_key stays a placeholder until signing is wired up
     const payload: CreateUser = {
-      ECDSA_public_key: profile?.ECDSA_public_key ?? '',
-      Is_Samaritan: isSamaritan,
-      Push_Token: profile?.Push_Token,
+      ecdsa_public_key: profile?.ecdsa_public_key ?? '',
+      is_samaritan: isSamaritan,
+      push_token: profile?.push_token,
     };
 
     try {
@@ -58,7 +58,7 @@ export default function ProfileScreen() {
     );
   }
 
-  const isSamaritan = profile?.Is_Samaritan ?? false;
+  const isSamaritan = profile?.is_samaritan ?? false;
 
   return (
     <View style={styles.container}>
@@ -69,9 +69,9 @@ export default function ProfileScreen() {
           <Detail label="Samaritan" value="Yes" />
           <Detail
             label="ECDSA public key"
-            value={profile?.ECDSA_public_key ? String(profile.ECDSA_public_key) : 'Not yet generated'}
+            value={profile?.ecdsa_public_key ? String(profile.ecdsa_public_key) : 'Not yet generated'}
           />
-          <Detail label="Push notifications" value={profile?.Push_Token ? 'Enabled' : 'Not set up'} />
+          <Detail label="Push notifications" value={profile?.push_token ? 'Enabled' : 'Not set up'} />
         </View>
       ) : (
         <Text style={styles.message}>You haven&apos;t opted in as a Samaritan yet.</Text>

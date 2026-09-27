@@ -3,7 +3,7 @@ import { generateECDSAKeyPair } from "./ecdsa"
 import * as SecureStore from 'expo-secure-store';
 
 
-export const createUser = async (is_samaritan: boolean) => {
+export const createUser = async (is_samaritan: boolean, push_token?: string) => {
     const keyPair = generateECDSAKeyPair()
     if(!keyPair) {
         throw new Error("Key pair came back null when generating user!")
@@ -18,7 +18,8 @@ export const createUser = async (is_samaritan: boolean) => {
     await postUser(
         {
             ecdsa_public_key: String(keyPair[1]),
-            is_samaritan: is_samaritan
+            is_samaritan: is_samaritan,
+            push_token: push_token,
         }
     )
 }

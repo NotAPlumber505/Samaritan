@@ -1,6 +1,6 @@
 package com.samaritan.constants.api;
 
 public record CreateUserResponse(
-        int userID
+        long user_iD
 ) {
 }
