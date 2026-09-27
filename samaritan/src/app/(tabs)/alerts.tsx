@@ -33,11 +33,11 @@ export default function AlertScreen() {
     try {
       console.log('[alerts] Step 3: Calling GET /emergency...');
       const response = await getEmergencies({
-        Latitude: location.coords.latitude,
-        Longitude: location.coords.longitude,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
       });
-      console.log('[alerts] Step 4: Received emergencies ->', response.Emergencies);
-      setEmergencies(response.Emergencies);
+      console.log('[alerts] Step 4: Received emergencies ->', response.emergencies);
+      setEmergencies(response.emergencies);
     } catch (error) {
       console.log('[alerts] Request failed ->', error);
       setErrorMessage('Could not load nearby emergencies. Please try again.');
@@ -66,20 +66,20 @@ export default function AlertScreen() {
         ) : null}
         {emergencies.map((emergency) => (
           <Pressable
-            key={String(emergency.Emergency_ID)}
-            accessibilityLabel={`View ${emergency.Emergency_Type ?? 'emergency'}`}
+            key={String(emergency.emergency_id)}
+            accessibilityLabel={`View ${emergency.emergency_type ?? 'emergency'}`}
             accessibilityRole="button"
             onPress={() => openDetails(emergency)}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <Text style={styles.type}>{emergency.Emergency_Type ?? 'Emergency'}</Text>
+            <Text style={styles.type}>{emergency.emergency_type ?? 'Emergency'}</Text>
             <Text style={styles.location}>
-              {emergency.Latitude?.toFixed(4)}, {emergency.Longitude?.toFixed(4)}
+              {emergency.latitude?.toFixed(4)}, {emergency.longitude?.toFixed(4)}
             </Text>
-            {emergency.Requested_At ? (
-              <Text style={styles.time}>Requested {new Date(String(emergency.Requested_At)).toLocaleString()}</Text>
+            {emergency.requested_at ? (
+              <Text style={styles.time}>Requested {new Date(String(emergency.requested_at)).toLocaleString()}</Text>
             ) : null}
-            {emergency.Description ? <Text style={styles.time}>{emergency.Description}</Text> : null}
+            {emergency.description ? <Text style={styles.time}>{emergency.description}</Text> : null}
           </Pressable>
         ))}
       </ScrollView>

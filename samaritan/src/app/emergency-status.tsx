@@ -11,10 +11,9 @@ export default function EmergencyStatusScreen() {
   const cancelEmergency = async () => {
     // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
     const payload: DeleteEmergency = {
-      User_ID: 1,
-      Emergency_ID: Number(emergencyId),
-      ECDSA_r: 0,
-      ECDSA_s: 0,
+      user_id: 1,
+      emergency_id: Number(emergencyId),
+      ecdsa_signature: ""
     };
 
     try {

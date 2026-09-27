@@ -31,10 +31,10 @@ export default function MapScreen() {
       console.log('[map] Step 2: Calling GET /location/{id}/distance...');
       const response = await getDistanceToResponder(emergencyId);
       console.log('[map] Step 3: Distance to responder ->', response);
-      setDistanceMiles(Number(response.Distance_Miles));
+      setDistanceMiles(Number(response.distance_miles));
       setResponderCoords({
-        latitude: Number(response.Responder_Latitude),
-        longitude: Number(response.Responder_Longitude),
+        latitude: Number(response.responder_latitude),
+        longitude: Number(response.responder_longitude),
       });
     } catch (error) {
       console.log('[map] Request failed ->', error);
