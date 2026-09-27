@@ -1,17 +1,17 @@
 package com.samaritan.websocket.model;
 
-import org.antlr.v4.runtime.misc.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LocationReport {
 
-    @NotNull
+    @NonNull
     @JsonProperty("Latitude")
     private Double latitude;
 
 
-    @NotNull
+    @NonNull
     @JsonProperty("Longitude")
     private Double longitude;
 
