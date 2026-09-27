@@ -6,9 +6,9 @@
  * Served by Front-end to Back-end
  */
 export interface CreateUser {
-    ECDSA_public_key: String
-    Is_Samaritan: boolean //Opt-in: true if the user agreed, on first app open, to respond to nearby emergencies
-    Push_Token?: String //Expo push notification token, used to notify this user of nearby emergencies
+    ecdsa_public_key: String
+    is_samaritan: boolean //Opt-in: true if the user agreed, on first app open, to respond to nearby emergencies
+    push_token?: String //Expo push notification token, used to notify this user of nearby emergencies
     // Post-MVP: Name?: String, Allergies?: String, Bio?: String
 }
 
@@ -20,7 +20,7 @@ export interface CreateUser {
  * Served by Back-end to Front-End
  */
 export interface CreateUserResponse {
-    User_ID: Number
+    user_id: Number
 }
 
 /**
@@ -31,10 +31,10 @@ export interface CreateUserResponse {
  * Served by Front-end to Back-end 
 */
 export interface CreateEmergency {
-    User_ID: Number
-    Latitude: Number
-    Longitude: Number
-    Ecdsa_signature: String
+    user_id: Number
+    latitude: Number
+    longitude: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -45,15 +45,15 @@ export interface CreateEmergency {
  * Served by Front-end to Back-end 
 */
 export interface UpdateEmergency {
-    User_ID: String
-    Emergency_ID: Number
-    Latitude?: Number
-    Longitude?: Number
-    Requires_911?: boolean
-    Emergency_Nature?: String
-    Self_Emergency?: String
-    Description?: String
-    Ecdsa_signature: String
+    user_id: String
+    emergency_id: Number
+    latitude?: Number
+    longitude?: Number
+    requires_911?: boolean
+    emergency_nature?: String
+    self_emergency?: String
+    description?: String
+    ecdsa_signature: String
 }
 
 /**
@@ -64,7 +64,7 @@ export interface UpdateEmergency {
  * Served by Back-end to Front-end 
  */
 export interface EmergencyBackendResponse {
-    Emergency_ID: Number
+    emergency_id: Number
 }
 
 /**
@@ -75,8 +75,8 @@ export interface EmergencyBackendResponse {
  * Served by Front-End to Back-end 
  */
 export interface RequestEmergencies {
-    Latitude: Number
-    Longitude: Number
+    latitude: Number
+    longitude: Number
 }
 
 /**
@@ -87,7 +87,7 @@ export interface RequestEmergencies {
  * Served by Back-end to Front-end after requesting reasonably distanced Emergencies to a specific user
  */
 export interface Emergencies {
-    Emergencies : EmergencyDetails[]
+    emergencies : EmergencyDetails[]
 }
 
 /**
@@ -98,14 +98,14 @@ export interface Emergencies {
  * Served by Back-end to Front-end after requesting a specific emergency
  */
 export interface EmergencyDetails {
-    Emergency_ID: Number
-    Latitude?: Number
-    Longitude?: Number
-    Requires_911?: boolean
-    Emergency_Type?: String
-    Self_Emergency?: String
-    Description?: String
-    Requested_At?: String //ISO-8601 timestamp of when the emergency was created
+    emergency_id: Number
+    latitude?: Number
+    longitude?: Number
+    requires_911?: boolean
+    emergency_type?: String
+    self_emergency?: String
+    description?: String
+    requested_at?: String //ISO-8601 timestamp of when the emergency was created
 }
 
 /**
@@ -116,9 +116,9 @@ export interface EmergencyDetails {
  * Accepts an emergency
  */
 export interface AcceptEmergency {
-    User_ID: String
-    Emergency_ID: Number
-    Ecdsa_signature: String
+    user_id: String
+    emergency_id: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -129,9 +129,9 @@ export interface AcceptEmergency {
  * Deletes a Emergency, must be requested from the original user
  */
 export interface DeleteEmergency {
-    User_ID: Number
-    Emergency_ID: Number
-    Ecdsa_signature: String
+    user_id: Number
+    emergency_id: Number
+    ecdsa_signature: String
 }
 
 /**
@@ -142,8 +142,8 @@ export interface DeleteEmergency {
  * Served by Front-end to Back-end
  */
 export interface ReportLocation {
-    Latitude: Number
-    Longitude: Number
+    latitude: Number
+    longitude: Number
 }
 
 /**
@@ -154,8 +154,8 @@ export interface ReportLocation {
  * Served by Back-end to Front-end
  */
 export interface DistanceToResponder {
-    Distance_Km: Number
-    Distance_Miles: Number
-    Responder_Latitude: Number
-    Responder_Longitude: Number
+    distance_km: Number
+    distance_miles: Number
+    responder_latitude: Number
+    responder_longitude: Number
 }

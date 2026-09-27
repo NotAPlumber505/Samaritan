@@ -38,11 +38,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   hintText: {
-    color: '#FF383C',
+    color: '#000000',
     fontSize: 13,
     textAlign: 'center',
     paddingHorizontal: 40,
-    marginTop: 8,
     fontWeight: 'bold',
   },
   disclaimerText: {

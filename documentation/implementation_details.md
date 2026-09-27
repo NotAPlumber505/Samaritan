@@ -29,7 +29,7 @@ Table of Contents:<br>
   - TEXTFIELD
 - Appears for samaritain responders as well, plus a map to where the emergency is
 #### Profile Page
-- Allows to opt in or out of being a samaritain 
+- Allows to opt in or out of being a samaritan 
 ## <a id="front-end"></a>Front-End 
 Behind-the-scenes logic of the UI.
 - No logins, ever. On first boot, generates a ECDSA key pair and sends it to POST /user. The back-end replies with the created User-ID.

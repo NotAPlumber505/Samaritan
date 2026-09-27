@@ -41,24 +41,24 @@ export default function EmergencyScreen() {
 
     // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
     const payload: CreateEmergency = {
-      User_ID: 1,
-      Latitude: location.coords.latitude,
-      Longitude: location.coords.longitude,
-      Ecdsa_signature: ""
+      user_id: 1,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      ecdsa_signature: ""
     };
 
     try {
       console.log('[submitEmergency] Step 3: Calling POST /emergency...');
       const response = await createEmergency(payload);
-      console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.Emergency_ID);
+      console.log('[submitEmergency] Step 4: Emergency created with ID ->', response.emergency_id);
 
-      await setActiveEmergencyId(Number(response.Emergency_ID));
+      await setActiveEmergencyId(Number(response.emergency_id));
 
       try {
         console.log('[submitEmergency] Step 5: Reporting requester location...');
-        await reportLocation(Number(response.Emergency_ID), 'requester', {
-          Latitude: location.coords.latitude,
-          Longitude: location.coords.longitude,
+        await reportLocation(Number(response.emergency_id), 'requester', {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
         });
       } catch (reportError) {
         // Non-fatal: the emergency was already created, so proceed even if the location report fails
@@ -67,11 +67,11 @@ export default function EmergencyScreen() {
 
       if (emergencyType !== '' || text !== '') {
         const updatePayload: UpdateEmergency = {
-          User_ID: '1', // TODO: replace with the real signed-in user's ID once auth exists
-          Emergency_ID: response.Emergency_ID,
-          Emergency_Nature: emergencyType || undefined,
-          Description: text || undefined,
-          Ecdsa_signature: ""
+          user_id: '1', // TODO: replace with the real signed-in user's ID once auth exists
+          emergency_id: response.emergency_id,
+          emergency_nature: emergencyType || undefined,
+          description: text || undefined,
+          ecdsa_signature: ""
         };
         try {
           console.log('[submitEmergency] Step 6: Calling POST /emergency/update...');

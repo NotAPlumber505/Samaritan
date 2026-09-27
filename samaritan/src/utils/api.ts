@@ -15,7 +15,7 @@ import {
 // Set EXPO_PUBLIC_API_BASE_URL in .env. When testing on a physical device/simulator,
 // "localhost" points at the device itself, so use your computer's LAN IP instead
 // (e.g. http://192.168.1.23:3000). Use https:// once pointed at a real backend.
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 /**
  * Shared fetch helper: sends the request, logs each step, and throws on a non-OK response.
