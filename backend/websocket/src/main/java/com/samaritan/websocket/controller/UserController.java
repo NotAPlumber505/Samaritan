@@ -3,6 +3,8 @@ package com.samaritan.websocket.controller;
 import com.samaritan.constants.api.CreateUser;
 import com.samaritan.constants.api.CreateUserResponse;
 import com.samaritan.websocket.entity.UserEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.samaritan.websocket.service.UserService;
 
@@ -18,9 +20,9 @@ public class UserController {
     }
 
     @PostMapping
-    public CreateUserResponse createUser(@RequestBody CreateUser json) {
+    public ResponseEntity<CreateUserResponse> createUser(@RequestBody CreateUser json) {
         UserEntity userEntity = new UserEntity(json.ecdsa_public_key(), json.is_samaritan(), json.push_key());
         UserEntity savedUser = userService.saveUser(userEntity);
-        return new CreateUserResponse(savedUser.getUserId());
+        return new ResponseEntity<>(new CreateUserResponse(savedUser.getUserId()), HttpStatus.CREATED);
     }
 }

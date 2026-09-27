@@ -47,7 +47,7 @@ export default function EmergencyScreen() {
       longitude: location.coords.longitude,
       ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
       JSON.stringify({
-      user_id: Number(getItem("user_id")),
+      user_id: Number(await getItem("user_id")),
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     })))
