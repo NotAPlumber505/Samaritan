@@ -14,9 +14,14 @@ export default function Index() {
         onPress={() => router.push('/emergency')}
         />
       </View>
+      {/**TODO: Retrieve from local storage if they're oped in or not 
+       * 
+      !optedIn &&*/
       <Text style={styles.hintText}>
         Want to help others nearby? You can opt in to be a Samaritan from the Profile tab.
       </Text>
+      }
+      
       <Text style={styles.disclaimerText}> For life-threatening emergencies, call 911 immediately. Samaritan connects you with nearby registered responders and does not replace emergency services. </Text>
     </View>
   );
