@@ -21,7 +21,7 @@ export const createUser = async (is_samaritan: boolean) => {
             is_samaritan: is_samaritan
         }
     )
-    setItem("is_samaritan ",String(is_samaritan))
+    setItem("is_samaritan", String(is_samaritan))
     setItem("user_id",String(response.user_id))
 
     
