@@ -4,16 +4,22 @@ import { DeleteEmergency } from '../constants/apiObjects';
 import { clearActiveEmergencyId } from '../utils/activeEmergency';
 import { deleteEmergency } from '../utils/api';
 import CancelButton from './components/CancelButton';
+import { getItem } from 'expo-secure-store';
+import { signData } from '@/utils/ecdsa';
+import { getSecureItem } from '@/utils/store';
 
 export default function EmergencyStatusScreen() {
   const { emergencyId } = useLocalSearchParams<{ emergencyId: string }>();
 
   const cancelEmergency = async () => {
-    // TODO: replace User_ID/ECDSA_r/ECDSA_s with the real signed-in user's ID and signature once auth exists
     const payload: DeleteEmergency = {
-      user_id: 1,
+      user_id: Number(await getItem("user_id")),
       emergency_id: Number(emergencyId),
-      ecdsa_signature: ""
+      ecdsa_signature: String(signData(getSecureItem("ecdsaPrivateKey")??"",
+        JSON.stringify({
+        user_id: Number(await getItem("user_id")),
+        emergency_id: Number(emergencyId),
+      })))
     };
 
     try {
