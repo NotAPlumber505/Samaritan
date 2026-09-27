@@ -1,6 +1,7 @@
 package com.samaritan.websocket.repository;
 
 
+import com.samaritan.constants.api.CreateEmergency;
 import com.samaritan.websocket.model.Emergency;
 
 import java.util.*;
@@ -20,6 +21,7 @@ public class EmergencyRepository {
     public Collection<Emergency> findAll() {
         return emergencies.values();
     }
+
 
 
 
@@ -47,7 +49,6 @@ public class EmergencyRepository {
                         originLat, originLng, e.getLatitude(), e.getLongitude())))
                 .toList();
     }
-
 
 
 

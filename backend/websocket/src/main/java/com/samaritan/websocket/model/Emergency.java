@@ -2,6 +2,7 @@ package com.samaritan.websocket.model;
 
 import java.time.Instant;
 
+
 public class Emergency {
 
     private final long id;
@@ -49,6 +50,7 @@ public class Emergency {
     public Double getLongitude() { return longitude;}
 
 
-
-
+    public long getUserId() {
+        return ownerUserId;
+    }
 }
