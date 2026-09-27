@@ -1,6 +1,6 @@
 import { postUser } from "./api"
 import { generateECDSAKeyPair } from "./ecdsa"
-import * as SecureStore from 'expo-secure-store';
+import { setItem, setSecureItem } from "./store"
 
 
 export const createUser = async (is_samaritan: boolean) => {
@@ -14,11 +14,15 @@ export const createUser = async (is_samaritan: boolean) => {
     if(!keyPair[1]) {
         throw new Error("Public key came back null!");
     }
-    SecureStore.setItem("ecdsaPrivateKey",String(keyPair[0]))
-    await postUser(
+    setSecureItem("ecdsaPrivateKey",String(keyPair[0]))
+    const response = await postUser(
         {
             ecdsa_public_key: String(keyPair[1]),
             is_samaritan: is_samaritan
         }
     )
+    setItem("is_samaritan ",String(is_samaritan))
+    setItem("user_id",String(response.user_id))
+
+    
 }
