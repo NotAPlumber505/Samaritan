@@ -64,7 +64,7 @@ export default function AlertScreen() {
         {!errorMessage && !isLoading && !emergencies?.length ? (
           <Text style={styles.message}>No nearby emergencies right now.</Text>
         ) : null}
-        {emergencies.map((emergency) => (
+        {emergencies?.map((emergency) => (
           <Pressable
             key={String(emergency.emergency_id)}
             accessibilityLabel={`View ${emergency.emergency_type ?? 'emergency'}`}

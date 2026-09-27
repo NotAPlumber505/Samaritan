@@ -1,8 +1,10 @@
 package com.samaritan.websocket.controller;
 
 
+import com.samaritan.websocket.entity.EmergencyEntity;
 import com.samaritan.websocket.model.Emergency;
 import com.samaritan.websocket.repository.EmergencyRepository;
+import com.samaritan.websocket.service.EmergencyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +19,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class EmergencyController {
 
-    private final EmergencyRepository emergencyRepository;
+    private final EmergencyService emergencyService;
 
-    public EmergencyController(EmergencyRepository emergencyRepository) {
-        this.emergencyRepository = emergencyRepository;
+    public EmergencyController(EmergencyService emergencyService) {
+        this.emergencyService = emergencyService;
     }
 
 
@@ -33,35 +35,43 @@ public class EmergencyController {
             return ResponseEntity.badRequest().build();
         }
 
-        Emergency emergency = emergencyRepository.create(request.user_id(), lat, lng);
-        return new ResponseEntity<>(new CreateEmergencyResponse(emergency.getId()), HttpStatus.CREATED);
+        EmergencyEntity emergency = new EmergencyEntity(request.user_id(), lat, lng, null, null, null, null);
+        return new ResponseEntity<>(new CreateEmergencyResponse(emergency.getEmergencyId()), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Emergency> getEmergency(@PathVariable Long id){
-        Optional<Emergency> emergency = emergencyRepository.findById(id);
-        return emergency.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<CreateEmergencyResponse> getEmergency(@PathVariable Long id){
+        Optional<EmergencyEntity> emergency = emergencyService.findEmergencyById(id);
+        return emergencyService.findEmergencyById(id)
+                .map(entity -> ResponseEntity.ok(new CreateEmergencyResponse(entity.getEmergencyId()))) // Or however you map Entity -> DTO
+                .orElseGet(() -> ResponseEntity.notFound().build());
 
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmergency(@PathVariable Long id){
-        return emergencyRepository.deleteById(id)
+        return emergencyService.deleteById(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<Emergency>> getNearbyEmergencies(
+    public ResponseEntity<List<EmergencyEntity>> getNearbyEmergencies(
             @RequestParam double Latitude,
             @RequestParam double Longitude) {
 
         if (Latitude < -90 || Latitude > 90 || Longitude < -180 || Longitude > 180 || 2000 <= 0) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(emergencyRepository.findNearby(Latitude, Longitude, 2000));
+        return ResponseEntity.ok(emergencyService.getAllEmergencies());
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<CreateEmergencyResponse> updateEmergency(@RequestBody UpdateEmergency json){
+        return new ResponseEntity<>(new CreateEmergencyResponse(emergencyService.updateEmergency((long) json.emergency_id(),new EmergencyEntity(json.user_id(), json.latitude(),json.longitude(),json.requires_911(),json.emergency_nature(), json.self_emergency() ,json.description())).getEmergencyId()), HttpStatus.CREATED);
+
+
+    }
 
 
 }

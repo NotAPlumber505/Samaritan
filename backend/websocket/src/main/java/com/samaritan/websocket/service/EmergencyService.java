@@ -1,72 +1,64 @@
 package com.samaritan.websocket.service;
 
-import com.samaritan.websocket.exception.EmergencyNotFoundException;
-import com.samaritan.websocket.exception.NotEmergencyOwnerException;
-import com.samaritan.websocket.model.Emergency;
-import com.samaritan.websocket.model.EmergencyDetails;
-import com.samaritan.websocket.model.UpdateEmergencyMessage;
+import com.samaritan.websocket.entity.EmergencyEntity;
 import com.samaritan.websocket.repository.EmergencyRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class EmergencyService {
-    private final EmergencyRepository repository;
-    private final EmergencyEventPublisher publisher;
 
+    private final EmergencyRepository emergencyRepository;
 
-    public EmergencyService(EmergencyRepository repository, EmergencyEventPublisher publisher){
-        this.repository = repository;
-        this.publisher = publisher;
+    public EmergencyService(EmergencyRepository emergencyRepository) {
+        this.emergencyRepository = emergencyRepository;
     }
 
-    public EmergencyDetails create(long ownerUserId, double latitude, double longitude) {
-        return repository.create(ownerUserId, latitude, longitude).toDetails();
+    @Transactional
+    public EmergencyEntity saveEmergency(EmergencyEntity emergencyEntity) {
+        EmergencyEntity entityToSave = new EmergencyEntity(
+                emergencyEntity.getUser_id(),
+                emergencyEntity.getLatitude(),
+                emergencyEntity.getLongitude(),
+                emergencyEntity.getRequires911(),
+                emergencyEntity.getEmergency_nature(),
+                emergencyEntity.getSelf_emergency(),
+                emergencyEntity.getDescription()
+        );
+
+        return emergencyRepository.save(entityToSave);
     }
 
-    public List<EmergencyDetails> findAll() {
-        return repository.findAll().stream()
-                .map(Emergency::toDetails)
-                .toList();
+    @Transactional(readOnly = true)
+    public Optional<EmergencyEntity> findEmergencyById(long emergencyId) {
+        return emergencyRepository.findById(emergencyId);
     }
-
-    public Optional<EmergencyDetails> findById(long emergencyId) {
-        return repository.findById(emergencyId).map(Emergency::toDetails);
+    public List<EmergencyEntity> getAllEmergencies() {
+        return emergencyRepository.findAll();
     }
-
-    public void delete(long emergencyId) {
-        if (!repository.deleteById(emergencyId)) {
-            throw new EmergencyNotFoundException(emergencyId);
-        }
-        publisher.emergencyDeleted(emergencyId);
+    public boolean deleteById(Long emergencyId) {
+        emergencyRepository.deleteById(emergencyId);
+        return true;
     }
+    @Transactional
+    public EmergencyEntity updateEmergency(Long id, EmergencyEntity updatedData) {
+        return emergencyRepository.findById(id)
+                .map(existingEmergency -> {
+                    existingEmergency.setLatitude(updatedData.getLatitude());
+                    existingEmergency.setLongitude(updatedData.getLongitude());
+                    existingEmergency.setRequires911(updatedData.getRequires911());
+                    existingEmergency.setSelf_emergency(updatedData.getSelf_emergency());
+                    existingEmergency.setEmergency_nature(updatedData.getEmergency_nature());
+                    existingEmergency.setDescription(updatedData.getDescription());
+                    // Add any other fields that are allowed to change here...
 
-    public EmergencyDetails applyUpdate(long emergencyId, UpdateEmergencyMessage update){
-        Emergency emergency = repository.findById(emergencyId)
-                .orElseThrow(() -> new EmergencyNotFoundException(emergencyId));
-
-        if(update.userId() == null || update.userId() != emergency.getOwnerUserId() ){
-            throw new NotEmergencyOwnerException(emergencyId);
-        }
-
-        EmergencyDetails details;
-        synchronized (emergency) {
-            emergency.applyUpdate(update);
-            details = emergency.toDetails();
-        }
-
-        publisher.emergencyUpdated(emergencyId, details);
-
-        return details;
-
-
-
+                    return emergencyRepository.save(existingEmergency);
+                })
+                .orElseThrow(() -> new EntityNotFoundException("Emergency not found with id: " + id));
     }
-
-
-
-
 
 }
