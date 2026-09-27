@@ -11,4 +11,8 @@ public class EmergencyTable {
         emergencyId ++;
         return currentId;
     }
+
+    public static void deleteEmergency(int id) {
+        // Mock only: there is no persisted emergency to delete yet.
+    }
 }

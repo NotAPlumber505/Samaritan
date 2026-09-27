@@ -1,16 +1,15 @@
 package com.samaritan.constants.api;
 
-/**
- * All fields except user_id and ecdsa_verification are optional.
- * */
+/** Request body for POST /emergency/{id}/update. The path id wins over emergency_id; the signature is not verified yet. */
 public record UpdateEmergency(
-        int user_id,
+        int emergency_id,
+        Long user_id,
         Double latitude,
         Double longitude,
         Boolean requires_911,
-        String emergency_type,
-        Boolean self_emergency,
+        String emergency_nature,
+        String self_emergency,
         String description,
-        String ecdsa_verification
+        String ecdsa_signature
 ) {
 }

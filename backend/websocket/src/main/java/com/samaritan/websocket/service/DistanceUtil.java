@@ -30,5 +30,7 @@ public final class DistanceUtil {
     }
 
 
-
+    public static double distanceInMeters(double originLat, double originLng, Double latitude, Double longitude) {
+        return 1;
+    }
 }

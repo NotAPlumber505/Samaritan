@@ -8,6 +8,9 @@ import com.samaritan.websocket.model.UpdateEmergencyMessage;
 import com.samaritan.websocket.repository.EmergencyRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class EmergencyService {
     private final EmergencyRepository repository;
@@ -19,6 +22,27 @@ public class EmergencyService {
         this.publisher = publisher;
     }
 
+    public EmergencyDetails create(long ownerUserId, double latitude, double longitude) {
+        return repository.create(ownerUserId, latitude, longitude).toDetails();
+    }
+
+    public List<EmergencyDetails> findAll() {
+        return repository.findAll().stream()
+                .map(Emergency::toDetails)
+                .toList();
+    }
+
+    public Optional<EmergencyDetails> findById(long emergencyId) {
+        return repository.findById(emergencyId).map(Emergency::toDetails);
+    }
+
+    public void delete(long emergencyId) {
+        if (!repository.deleteById(emergencyId)) {
+            throw new EmergencyNotFoundException(emergencyId);
+        }
+        publisher.emergencyDeleted(emergencyId);
+    }
+
     public EmergencyDetails applyUpdate(long emergencyId, UpdateEmergencyMessage update){
         Emergency emergency = repository.findById(emergencyId)
                 .orElseThrow(() -> new EmergencyNotFoundException(emergencyId));
@@ -27,12 +51,14 @@ public class EmergencyService {
             throw new NotEmergencyOwnerException(emergencyId);
         }
 
-        EmergencyDetails details;
-        synchronized (emergency) {
-            emergency.applyUpdate(update);
-            details = emergency.toDetails();
+        emergency.applyUpdate(update);
+
+        // Persist before broadcasting, so watchers never see a change that wasn't saved
+        if (!repository.update(emergency)) {
+            throw new EmergencyNotFoundException(emergencyId); // deleted in the meantime
         }
 
+        EmergencyDetails details = emergency.toDetails();
         publisher.emergencyUpdated(emergencyId, details);
 
         return details;
