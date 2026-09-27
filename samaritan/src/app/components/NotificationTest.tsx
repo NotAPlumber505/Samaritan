@@ -16,9 +16,7 @@ Notifications.setNotificationHandler({
 export default function NotificationTest() { 
   const [expoPushToken, setExpoPushToken] = useState<string>(''); // Holds the device address string
 
-  useEffect(() => { 
-    registerForPushNotificationsAsync();
-  }, []);
+
 
   const registerForPushNotificationsAsync = async () => { 
     try { 
@@ -47,6 +45,9 @@ export default function NotificationTest() {
       console.error("Error getting push token:", error);
     }
   };
+  useEffect(() => { 
+    registerForPushNotificationsAsync();
+  }, []);
 
   // Helper function to talk to your backend controller that connects with it <3
   const sendTokenToBackend = async (token: string) => {

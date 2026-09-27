@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import Button from '../components/EmergencyButton';
+import NotificationTest from '../components/NotificationTest';
 
 export default function Index() {
   const router = useRouter();
@@ -9,6 +10,7 @@ export default function Index() {
     <View style={styles.container}>
       <Text style={styles.text}>Connect people who can help with people who need help.</Text>
       <View>
+        <NotificationTest></NotificationTest>
         <Button 
         label="Request Emergency Help"
         onPress={() => router.push('/emergency')}
