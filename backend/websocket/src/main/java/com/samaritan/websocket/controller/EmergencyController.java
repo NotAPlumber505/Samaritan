@@ -65,8 +65,9 @@ public class EmergencyController {
             return ResponseEntity.badRequest().build();
         }
         List<EmergencyEntity> emergencies = emergencyService.getAllEmergencies();
-        List<EmergencyDetails> emergenciesButInDetailsClass = emergencies.stream().map(EmergencyDetails::new).toList();
-        return new ResponseEntity<>(, HttpStatus.CREATED);
+        List<EmergencyDetails> emergenciesDetails = emergencies.stream().map(e -> new EmergencyDetails((int)e.getEmergencyId(), e.getLatitude(), e.getLongitude(), e.getRequires911(),e.getEmergency_nature(),e.getSelf_emergency(),e.getDescription(),"")).toList();
+        System.out.println(emergenciesDetails);
+        return new ResponseEntity<>(emergenciesDetails, HttpStatus.CREATED);
     }
 
     @PostMapping("/update")
